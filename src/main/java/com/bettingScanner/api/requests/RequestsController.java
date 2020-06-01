@@ -4,6 +4,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.bettingScanner.api.BettingScannerApiApplication;
+import com.bettingScanner.api.LocalStorage;
+
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,28 +19,30 @@ import org.springframework.web.bind.annotation.PostMapping;
 @RequestMapping("/requests/v1")
 public class RequestsController {
 
+    final LocalStorage storage = BettingScannerApiApplication.localStorage;
+
     @GetMapping("/all")
     public List<Request> getAllRequests() {
-        return FileSerivce.loadWaitingRequests();
+        return storage.getWaitingRequests();
     }
 
     @GetMapping("/finished")
     public List<Request> getFinishedRequests() {
-        return FileSerivce.loadFinishedRequests();
+        return storage.getFinishedRequests();
     }
 
     @RequestMapping(value = "/", method = RequestMethod.DELETE)
     public void deleteRequest(@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime date,
             @RequestParam(defaultValue = "true") Boolean fromFinished) {
 
-        List<Request> requests = fromFinished ? FileSerivce.loadFinishedRequests() : FileSerivce.loadWaitingRequests();
+        List<Request> requests = fromFinished ? storage.getFinishedRequests() : storage.getWaitingRequests();
         final LocalDateTime[] finalDate = { date };
         requests = requests.stream().filter(req -> !req.getCreatedDate().equals(finalDate[0]))
                 .collect(Collectors.toList());
         if (fromFinished)
-            FileSerivce.saveFinishedRequests(requests);
+            storage.setFinishedRequests(requests);
         else
-            FileSerivce.saveWaitingRequests(requests);
+            storage.setWaitingRequests(requests);
     }
 
     @PostMapping(value = "/")
@@ -45,7 +50,7 @@ public class RequestsController {
             @RequestParam(defaultValue = "") String matchUrl) {
 
         Request newRequest = new Request(url, matchUrl, keyword);
-        FileSerivce.addWaitingRequest(newRequest);
+        storage.addWaitingRequest(newRequest);
         return newRequest;
     }
 }
