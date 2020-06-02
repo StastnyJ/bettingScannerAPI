@@ -1,4 +1,4 @@
-package com.bettingScanner.api.requests;
+package com.bettingScanner.api.services;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.stream.Collectors;
+
+import com.bettingScanner.api.requests.Request;
 
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;

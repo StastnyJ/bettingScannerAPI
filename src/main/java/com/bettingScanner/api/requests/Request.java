@@ -9,11 +9,11 @@ public class Request {
     private final LocalDateTime createdDate;
 
     public Request(String scanUrl, String displayUrl, String keyword, LocalDateTime createDate) {
-        if (scanUrl == null || scanUrl == "")
+        if (scanUrl == null || scanUrl.length() == 0)
             throw new NullPointerException("Scan url can not be null or empty");
-        if (displayUrl == null || displayUrl == "")
+        if (displayUrl == null || displayUrl.length() == 0)
             displayUrl = scanUrl;
-        if (keyword == null || keyword == "")
+        if (keyword == null || keyword.length() == 0)
             throw new NullPointerException("Keyword can not be null or empty");
         if (createDate == null)
             createDate = LocalDateTime.now();
