@@ -75,7 +75,7 @@ public class RequestsController {
                 storage.deleteRequest(act);
             }
         }
-        if (requests.size() > 0) {
+        if (result.size() > 0) {
             EmailingService.NotifyFounds(result, storage.getEmail());
         }
         return result;
