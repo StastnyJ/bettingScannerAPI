@@ -1,0 +1,1 @@
+{"version":3,"sources":["index.css"],"names":[],"mappings":"AAAA,KACE,QAAS,CACT,SACF,CAEA,gBACE,YACF,CAEA,0BACE,gBACE,WACF,CACF","file":"main.51a11f25.chunk.css","sourcesContent":["body {\n  margin: 0;\n  padding: 0;\n}\n\n.page-container {\n  padding: 64px;\n}\n\n@media (max-width: 1280px) {\n  .page-container {\n    padding: 8px;\n  }\n}\n"]}

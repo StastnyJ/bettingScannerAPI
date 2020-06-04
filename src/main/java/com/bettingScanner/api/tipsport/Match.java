@@ -10,14 +10,20 @@ import org.json.JSONObject;
 public class Match {
     private final String description;
     private final int id;
+    private final String matchUrl;
 
-    public Match(String description, int id) {
+    public Match(String description, int id, String matchUrl) {
         this.description = description;
         this.id = id;
+        this.matchUrl = matchUrl;
     }
 
     public String getDescription() {
         return description;
+    }
+
+    public String getMatchUrl() {
+        return this.matchUrl;
     }
 
     public int getId() {
@@ -39,7 +45,11 @@ public class Match {
                         JSONObject match = matches.getJSONObject(k).getJSONObject("match");
                         int id = match.getInt("id");
                         String desc = match.getString("nameFull");
-                        res.add(new Match(desc, id));
+                        String home = match.getString("homeParticipant").toLowerCase().replace(" ", "-");
+                        String visit = match.getString("visitingParticipant").toLowerCase().replace(" ", "-");
+                        String sport = match.getString("nameSuperSport").toLowerCase().replace(" ", "-");
+                        String matchUrl = String.format("https://www.tipsport.cz/%s-%s-%s-%d", sport, home, visit, id);
+                        res.add(new Match(desc, id, matchUrl));
                     }
                 }
             }

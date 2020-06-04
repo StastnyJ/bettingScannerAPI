@@ -5,6 +5,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpCookie;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -12,11 +13,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.fasterxml.jackson.databind.util.JSONPObject;
+import com.bettingScanner.api.requests.Request;
 
 import org.apache.tomcat.util.buf.StringUtils;
 
 public class WebScanningService {
+    public static String tipsportJSessionId = "";
 
     public static List<HttpCookie> getCookies(URL url) {
         HttpURLConnection con = null;
@@ -48,12 +50,27 @@ public class WebScanningService {
     }
 
     public static String getSiteContent(URL url) {
+        return getSiteContent(url, new ArrayList<>());
+    }
+
+    public static String getSiteContent(URL url, HttpCookie cookie) {
+        List<HttpCookie> cookies = new ArrayList<>();
+        cookies.add(cookie);
+        return getSiteContent(url, cookies);
+    }
+
+    public static String getSiteContent(URL url, List<HttpCookie> cookies) {
         HttpURLConnection con = null;
         StringBuffer res = new StringBuffer();
         try {
             con = (HttpURLConnection) url.openConnection();
             con.setRequestMethod("GET");
+            if (cookies != null && cookies.size() > 0)
+                con.setRequestProperty("Cookie", StringUtils.join(
+                        cookies.stream().map(c -> c.getName() + "=" + c.getValue()).collect(Collectors.toList()), ';'));
             int responseCode = con.getResponseCode();
+            if (responseCode >= 400 && responseCode < 500)
+                return "unauthorized";
             try (BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()))) {
                 String inputLine;
                 while ((inputLine = in.readLine()) != null) {
@@ -86,6 +103,8 @@ public class WebScanningService {
                 os.flush();
             }
             int responseCode = con.getResponseCode();
+            if (responseCode >= 400 && responseCode < 500)
+                return "unauthorized";
             try (BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()))) {
                 String inputLine;
                 while ((inputLine = in.readLine()) != null) {
@@ -113,5 +132,21 @@ public class WebScanningService {
             vals.add(String.format("\"%s\":\"%s\"", key, params.get(key)));
         }
         return "{" + String.join(",", vals) + "}";
+    }
+
+    private static boolean scanRequest(Request req, boolean repeated) throws MalformedURLException {
+        if (tipsportJSessionId.length() == 0)
+            tipsportJSessionId = getJSessionId(new URL("https://www.tipsport.cz/"));
+        String siteContent = getSiteContent(new URL(req.getScanUrl()),
+                new HttpCookie("JSESSIONID", tipsportJSessionId));
+        if (siteContent.equals("unauthorized") && !repeated) {
+            tipsportJSessionId = "";
+            return scanRequest(req, true);
+        }
+        return siteContent.toLowerCase().contains(req.getKeyword().toLowerCase());
+    }
+
+    public static boolean scanRequest(Request req) throws MalformedURLException {
+        return scanRequest(req, false);
     }
 }

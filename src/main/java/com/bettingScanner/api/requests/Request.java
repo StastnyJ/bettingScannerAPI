@@ -6,9 +6,10 @@ public class Request {
     private final String scanUrl;
     private final String displayUrl;
     private final String keyword;
+    private boolean finnished;
     private final LocalDateTime createdDate;
 
-    public Request(String scanUrl, String displayUrl, String keyword, LocalDateTime createDate) {
+    public Request(String scanUrl, String displayUrl, String keyword, LocalDateTime createDate, boolean isFinnished) {
         if (scanUrl == null || scanUrl.length() == 0)
             throw new NullPointerException("Scan url can not be null or empty");
         if (displayUrl == null || displayUrl.length() == 0)
@@ -21,28 +22,31 @@ public class Request {
         this.displayUrl = displayUrl;
         this.keyword = keyword;
         this.createdDate = createDate;
+        this.finnished = isFinnished;
     }
 
     public Request(String scanUrl, String displayUrl, String keyword) {
-        this(scanUrl, displayUrl, keyword, null);
+        this(scanUrl, displayUrl, keyword, null, false);
+    }
+
+    public Request(String scanUrl, String displayUrl, String keyword, boolean isFinnished) {
+        this(scanUrl, displayUrl, keyword, null, isFinnished);
     }
 
     public Request(String scanUrl, String keyword, LocalDateTime createdDate) {
-        this(scanUrl, scanUrl, keyword, createdDate);
+        this(scanUrl, scanUrl, keyword, createdDate, false);
+    }
+
+    public Request(String scanUrl, String keyword, LocalDateTime createdDate, boolean isFinnished) {
+        this(scanUrl, scanUrl, keyword, createdDate, isFinnished);
     }
 
     public Request(String scanUrl, String keyword) {
         this(scanUrl, scanUrl, keyword);
     }
 
-    public static Request parse(String pattern) {
-        if (pattern == null || pattern.length() == 0)
-            throw new NullPointerException("Pattern can not be null");
-        String[] data = pattern.split("\\|");
-        if (data.length != 4) {
-            throw new IllegalArgumentException("Pattern is in incorrect format");
-        }
-        return new Request(data[0], data[1], data[2], LocalDateTime.parse(data[3]));
+    public Request(String scanUrl, String keyword, boolean isFinnished) {
+        this(scanUrl, scanUrl, keyword, isFinnished);
     }
 
     public String getScanUrl() {
@@ -61,8 +65,23 @@ public class Request {
         return createdDate;
     }
 
+    public boolean isFinnished() {
+        return finnished;
+    }
+
+    public void finish() {
+        this.finnished = true;
+    }
+
     @Override
     public String toString() {
         return String.format("%s|%s|%s|%s", scanUrl, displayUrl, keyword, createdDate.toString());
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null || !(obj instanceof Request))
+            return false;
+        return this.createdDate.equals(((Request) obj).getCreatedDate());
     }
 }
