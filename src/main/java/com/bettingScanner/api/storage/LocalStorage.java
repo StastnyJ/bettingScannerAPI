@@ -45,14 +45,30 @@ public class LocalStorage implements Storage {
     }
 
     @Override
+    public void finishRequests(List<Request> reqs) {
+        reqs.forEach(r -> finishRequest(r));
+    }
+
+    @Override
     public void addRequest(Request req) {
         requests.addRequest(req);
+    }
+
+    @Override
+    public void addRequests(List<Request> reqs) {
+        reqs.forEach(r -> requests.addRequest(r));
     }
 
     @Override
     public void deleteRequest(LocalDateTime createdTime) {
         requests.setRequests(requests.getRequets().stream().filter(r -> !r.getCreatedDate().equals(createdTime))
                 .collect(Collectors.toList()));
+    }
+
+    @Override
+    public void deleteRequests(List<Request> reqs) {
+        requests.setRequests(
+                requests.getRequets().stream().filter(r -> !reqs.contains(r)).collect(Collectors.toList()));
     }
 
     @Override

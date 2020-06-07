@@ -73,9 +73,20 @@ public class Request {
         this.finnished = true;
     }
 
+    public static Request parse(String raw) {
+        String[] data = raw.split("\\|");
+        if (data.length != 5)
+            return Request.empty();
+        return new Request(data[0], data[1], data[2], LocalDateTime.parse(data[3]), Boolean.parseBoolean(data[4]));
+    }
+
+    public static Request empty() {
+        return new Request("", "", "");
+    }
+
     @Override
     public String toString() {
-        return String.format("%s|%s|%s|%s", scanUrl, displayUrl, keyword, createdDate.toString());
+        return String.format("%s|%s|%s|%s|%b", scanUrl, displayUrl, keyword, createdDate.toString(), finnished);
     }
 
     @Override

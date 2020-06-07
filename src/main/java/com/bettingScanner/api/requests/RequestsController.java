@@ -68,7 +68,6 @@ public class RequestsController {
         for (Request act : requests) {
             try {
                 if (WebScanningService.scanRequest(act)) {
-                    storage.finishRequest(act);
                     result.add(act);
                 }
             } catch (MalformedURLException ex) {
@@ -76,6 +75,7 @@ public class RequestsController {
             }
         }
         if (result.size() > 0) {
+            storage.finishRequests(result);
             EmailingService.NotifyFounds(result, storage.getEmail());
         }
         return result;
