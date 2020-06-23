@@ -50,16 +50,16 @@ public class WebScanningService {
     }
 
     public static String getSiteContent(URL url) {
-        return getSiteContent(url, new ArrayList<>());
+        return getSiteContent(url, new ArrayList<>(), null);
     }
 
     public static String getSiteContent(URL url, HttpCookie cookie) {
         List<HttpCookie> cookies = new ArrayList<>();
         cookies.add(cookie);
-        return getSiteContent(url, cookies);
+        return getSiteContent(url, cookies, null);
     }
 
-    public static String getSiteContent(URL url, List<HttpCookie> cookies) {
+    public static String getSiteContent(URL url, List<HttpCookie> cookies, String authorization) {
         HttpURLConnection con = null;
         StringBuffer res = new StringBuffer();
         try {
@@ -68,6 +68,8 @@ public class WebScanningService {
             if (cookies != null && cookies.size() > 0)
                 con.setRequestProperty("Cookie", StringUtils.join(
                         cookies.stream().map(c -> c.getName() + "=" + c.getValue()).collect(Collectors.toList()), ';'));
+            if (authorization != null && authorization.length() > 0)
+                con.setRequestProperty("Authorization", authorization);
             int responseCode = con.getResponseCode();
             if (responseCode >= 400 && responseCode < 500)
                 return "unauthorized";
@@ -137,8 +139,11 @@ public class WebScanningService {
     private static boolean scanRequest(Request req, boolean repeated) throws MalformedURLException {
         if (tipsportJSessionId.length() == 0)
             tipsportJSessionId = getJSessionId(new URL("https://www.tipsport.cz/"));
-        String siteContent = getSiteContent(new URL(req.getScanUrl()),
-                new HttpCookie("JSESSIONID", tipsportJSessionId));
+        String siteContent;
+        if (req.getScanUrl().contains("betting-scanner-api"))
+            siteContent = getSiteContent(new URL(req.getScanUrl()), null, "Basic YmV0bHVraTpxbXlwZmdoMTc=");
+        else
+            siteContent = getSiteContent(new URL(req.getScanUrl()), new HttpCookie("JSESSIONID", tipsportJSessionId));
         if (siteContent.equals("unauthorized") && !repeated) {
             tipsportJSessionId = "";
             return scanRequest(req, true);
