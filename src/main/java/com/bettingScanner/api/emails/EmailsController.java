@@ -1,5 +1,6 @@
 package com.bettingScanner.api.emails;
 
+import java.util.List;
 import java.util.regex.Pattern;
 
 import com.bettingScanner.api.BettingScannerApiApplication;
@@ -8,6 +9,7 @@ import com.bettingScanner.api.storage.Storage;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,15 +23,23 @@ public class EmailsController {
     private static final Pattern mailRegex = Pattern.compile("^.+@.+\\..+$");
 
     @GetMapping("/")
-    public String getEmail() {
-        return storage.getEmail();
+    public List<String> getEmails() {
+        return storage.getEmails();
     }
 
     @PostMapping("/")
     public ResponseEntity<Void> changeEmail(@RequestParam String email) {
         if (email == null || !mailRegex.matcher(email).matches())
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        storage.setEmail(email);
+        storage.addEmail(email);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @DeleteMapping("/")
+    public ResponseEntity<Void> deleteEmail(@RequestParam String email) {
+        if (email == null || !mailRegex.matcher(email).matches())
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        storage.removeEmail(email);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

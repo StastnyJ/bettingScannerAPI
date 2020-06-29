@@ -40,8 +40,8 @@ public class CloudStorage implements Storage {
     }
 
     @Override
-    public String getEmail() {
-        return storage.getEmail();
+    public List<String> getEmails() {
+        return storage.getEmails();
     }
 
     @Override
@@ -81,8 +81,20 @@ public class CloudStorage implements Storage {
     }
 
     @Override
-    public void setEmail(String email) {
-        storage.setEmail(email);
+    public void addEmail(String email) {
+        storage.addEmail(email);
+        saveToCloudAsync();
+    }
+
+    @Override
+    public void addEmails(List<String> emails) {
+        storage.addEmails(emails);
+        saveToCloudAsync();
+    }
+
+    @Override
+    public void removeEmail(String email) {
+        storage.removeEmail(email);
         saveToCloudAsync();
     }
 
@@ -97,7 +109,10 @@ public class CloudStorage implements Storage {
 
     private String serializeStorage() {
         StringBuilder res = new StringBuilder();
-        res.append("{\"email\": \"" + storage.getEmail() + "\",\"requests\":[");
+        res.append("{\"emails\": [");
+        res.append(
+                String.join(",", storage.getEmails().stream().map(e -> "\"" + e + "\"").collect(Collectors.toList())));
+        res.append("],\"requests\":[");
         res.append(String.join(",",
                 storage.getAllRequests().stream().map(r -> "\"" + r.toString() + "\"").collect(Collectors.toList())));
         res.append("]}");
@@ -107,13 +122,18 @@ public class CloudStorage implements Storage {
     private void fillStorage() throws JSONException {
         String rawData = StringSharerService.getString(stringKey);
         JSONObject json = new JSONObject(rawData);
-        String email = json.getString("email");
+        JSONArray emails = json.getJSONArray("emails");
         JSONArray data = json.getJSONArray("requests");
         List<Request> requests = new ArrayList<>();
+        List<String> emailsList = new ArrayList<>();
         for (int i = 0; i < data.length(); i++) {
             requests.add(Request.parse(data.getString(i)));
         }
-        storage.setEmail(email);
+        for (int i = 0; i < emails.length(); i++) {
+            emailsList.add(emails.getString(i));
+        }
+
         storage.addRequests(requests);
+        storage.addEmails(emailsList);
     }
 }

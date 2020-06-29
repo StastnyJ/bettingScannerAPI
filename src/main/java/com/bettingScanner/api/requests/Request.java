@@ -6,10 +6,12 @@ public class Request {
     private final String scanUrl;
     private final String displayUrl;
     private final String keyword;
+    private final String email;
     private boolean finnished;
     private final LocalDateTime createdDate;
 
-    public Request(String scanUrl, String displayUrl, String keyword, LocalDateTime createDate, boolean isFinnished) {
+    public Request(String scanUrl, String displayUrl, String keyword, String email, LocalDateTime createDate,
+            boolean isFinnished) {
         if (scanUrl == null || scanUrl.length() == 0)
             throw new NullPointerException("Scan url can not be null or empty");
         if (displayUrl == null || displayUrl.length() == 0)
@@ -21,32 +23,33 @@ public class Request {
         this.scanUrl = scanUrl;
         this.displayUrl = displayUrl;
         this.keyword = keyword;
+        this.email = email;
         this.createdDate = createDate;
         this.finnished = isFinnished;
     }
 
-    public Request(String scanUrl, String displayUrl, String keyword) {
-        this(scanUrl, displayUrl, keyword, null, false);
+    public Request(String scanUrl, String displayUrl, String keyword, String email) {
+        this(scanUrl, displayUrl, keyword, email, null, false);
     }
 
-    public Request(String scanUrl, String displayUrl, String keyword, boolean isFinnished) {
-        this(scanUrl, displayUrl, keyword, null, isFinnished);
+    public Request(String scanUrl, String displayUrl, String keyword, String email, boolean isFinnished) {
+        this(scanUrl, displayUrl, keyword, email, null, isFinnished);
     }
 
-    public Request(String scanUrl, String keyword, LocalDateTime createdDate) {
-        this(scanUrl, scanUrl, keyword, createdDate, false);
+    public Request(String scanUrl, String keyword, String email, LocalDateTime createdDate) {
+        this(scanUrl, scanUrl, keyword, email, createdDate, false);
     }
 
-    public Request(String scanUrl, String keyword, LocalDateTime createdDate, boolean isFinnished) {
-        this(scanUrl, scanUrl, keyword, createdDate, isFinnished);
+    public Request(String scanUrl, String keyword, String email, LocalDateTime createdDate, boolean isFinnished) {
+        this(scanUrl, scanUrl, keyword, email, createdDate, isFinnished);
     }
 
-    public Request(String scanUrl, String keyword) {
-        this(scanUrl, scanUrl, keyword);
+    public Request(String scanUrl, String keyword, String email) {
+        this(scanUrl, scanUrl, keyword, email);
     }
 
-    public Request(String scanUrl, String keyword, boolean isFinnished) {
-        this(scanUrl, scanUrl, keyword, isFinnished);
+    public Request(String scanUrl, String keyword, String email, boolean isFinnished) {
+        this(scanUrl, scanUrl, keyword, email, isFinnished);
     }
 
     public String getScanUrl() {
@@ -65,6 +68,10 @@ public class Request {
         return createdDate;
     }
 
+    public String getEmail() {
+        return email;
+    }
+
     public boolean isFinnished() {
         return finnished;
     }
@@ -75,9 +82,10 @@ public class Request {
 
     public static Request parse(String raw) {
         String[] data = raw.split("\\|");
-        if (data.length != 5)
+        if (data.length != 6)
             return Request.empty();
-        return new Request(data[0], data[1], data[2], LocalDateTime.parse(data[3]), Boolean.parseBoolean(data[4]));
+        return new Request(data[0], data[1], data[2], data[3], LocalDateTime.parse(data[4]),
+                Boolean.parseBoolean(data[5]));
     }
 
     public static Request empty() {
@@ -86,7 +94,8 @@ public class Request {
 
     @Override
     public String toString() {
-        return String.format("%s|%s|%s|%s|%b", scanUrl, displayUrl, keyword, createdDate.toString(), finnished);
+        return String.format("%s|%s|%s|%s|%s|%b", scanUrl, displayUrl, keyword, email, createdDate.toString(),
+                finnished);
     }
 
     @Override

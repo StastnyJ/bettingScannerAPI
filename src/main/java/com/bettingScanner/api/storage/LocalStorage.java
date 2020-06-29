@@ -12,11 +12,11 @@ import com.bettingScanner.api.requests.Request;
 
 public class LocalStorage implements Storage {
     private RequestsItem requests;
-    private String email;
+    private List<String> emails;
 
     public LocalStorage() {
         this.requests = new RequestsItem();
-        this.email = "";
+        this.emails = new ArrayList<>();
     }
 
     @Override
@@ -72,13 +72,27 @@ public class LocalStorage implements Storage {
     }
 
     @Override
-    public String getEmail() {
-        return this.email;
+    public List<String> getEmails() {
+        return this.emails.stream().collect(Collectors.toList());
     }
 
     @Override
-    public void setEmail(String email) {
-        this.email = email;
+    public void addEmail(String email) {
+        if (emails.stream().filter(e -> e.equals(email)).count() == 0)
+            this.emails.add(email);
+    }
+
+    @Override
+    public void addEmails(List<String> emails) {
+        if (emails == null)
+            return;
+        for (String email : emails)
+            this.addEmail(email);
+    }
+
+    @Override
+    public void removeEmail(String email) {
+        this.emails = this.emails.stream().filter(e -> !e.equals(email)).collect(Collectors.toList());
     }
 
     private class RequestsItem {

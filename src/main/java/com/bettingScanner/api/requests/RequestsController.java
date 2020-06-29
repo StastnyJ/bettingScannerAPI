@@ -53,10 +53,10 @@ public class RequestsController {
     }
 
     @PostMapping(value = "/")
-    public Request postMethodName(@RequestParam String url, @RequestParam String keyword,
+    public Request postMethodName(@RequestParam String url, @RequestParam String keyword, @RequestParam String email,
             @RequestParam(defaultValue = "") String matchUrl) {
 
-        Request newRequest = new Request(url, matchUrl, keyword);
+        Request newRequest = new Request(url, matchUrl, keyword, email);
         storage.addRequest(newRequest);
         return newRequest;
     }
@@ -76,7 +76,7 @@ public class RequestsController {
         }
         if (result.size() > 0) {
             storage.finishRequests(result);
-            EmailingService.NotifyFounds(result, storage.getEmail());
+            EmailingService.notifyFounds(result);
         }
         return result;
     }

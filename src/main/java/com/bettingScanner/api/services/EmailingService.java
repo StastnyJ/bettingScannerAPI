@@ -1,6 +1,9 @@
 package com.bettingScanner.api.services;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import javax.mail.Message;
@@ -19,7 +22,7 @@ public class EmailingService {
     private final static String host = "smtp.gmail.com";
     private final static String port = "465";
 
-    public static void SendEmail(String email, String subject, String body) {
+    public static void sendEmail(String email, String subject, String body) {
         try {
             MimeMessage message = getMimeMessage();
             message.setFrom(new InternetAddress(from));
@@ -32,17 +35,29 @@ public class EmailingService {
         }
     }
 
-    public static void NotifyFounds(List<Request> reqs, String email) {
+    public static void notifyFounds(List<Request> reqs) {
+        Map<String, List<Request>> groups = new HashMap<>();
+        for (Request req : reqs) {
+            if (!groups.containsKey(req.getEmail()))
+                groups.put(req.getEmail(), new ArrayList<>());
+            groups.get(req.getEmail()).add(req);
+        }
+        for (String email : groups.keySet()) {
+            notifyFounds(groups.get(email), email);
+        }
+    }
+
+    public static void notifyFounds(List<Request> reqs, String email) {
         StringBuilder body = new StringBuilder();
         body.append("<p>Scanning service found one or more keywords on the following websites:</p><br/><ul>");
         reqs.stream().forEach(req -> body.append(String.format("<li><b>%s:</b> <a href=\"%s\">%s</a></li>",
                 req.getKeyword(), req.getDisplayUrl(), req.getDisplayUrl())));
         body.append("</ul>");
-        SendEmail(email, "Scanning service found one or more keywords", body.toString());
+        sendEmail(email, "Scanning service found one or more keywords", body.toString());
     }
 
     public static void testEmail(String email) {
-        SendEmail(email, "Test email", "<b>This is test email</b>");
+        sendEmail(email, "Test email", "<b>This is test email</b>");
     }
 
     private static MimeMessage getMimeMessage() {

@@ -2,7 +2,6 @@ package com.bettingScanner.api.storage;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import com.bettingScanner.api.requests.Request;
 
@@ -25,9 +24,13 @@ public interface Storage {
 
     public void finishRequests(List<Request> reqs);
 
-    public String getEmail();
+    public List<String> getEmails();
 
-    public void setEmail(String email);
+    public void addEmail(String email);
+
+    public void addEmails(List<String> emails);
+
+    public void removeEmail(String email);
 
     public default void deleteRequest(Request req) {
         deleteRequest(req.getCreatedDate());
