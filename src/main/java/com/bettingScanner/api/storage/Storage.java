@@ -32,6 +32,8 @@ public interface Storage {
 
     public void removeEmail(String email);
 
+    public void notifyUpdate();
+
     public default void deleteRequest(Request req) {
         deleteRequest(req.getCreatedDate());
     }

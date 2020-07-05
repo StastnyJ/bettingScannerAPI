@@ -95,6 +95,11 @@ public class LocalStorage implements Storage {
         this.emails = this.emails.stream().filter(e -> !e.equals(email)).collect(Collectors.toList());
     }
 
+    @Override
+    public void notifyUpdate() {
+
+    }
+
     private class RequestsItem {
         private List<Request> requests;
         // private ReadWriteLock lock = new ReentrantReadWriteLock();

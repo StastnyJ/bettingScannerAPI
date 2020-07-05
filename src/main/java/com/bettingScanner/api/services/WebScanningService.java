@@ -8,12 +8,16 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.bettingScanner.api.requests.Request;
+import com.bettingScanner.api.requests.StateRequest;
+import com.bettingScanner.api.tipsport.Match;
 
 import org.apache.tomcat.util.buf.StringUtils;
 
@@ -149,6 +153,33 @@ public class WebScanningService {
             return scanRequest(req, true);
         }
         return siteContent.toLowerCase().contains(req.getKeyword().toLowerCase());
+    }
+
+    public static List<Match> scanStateRequest(StateRequest req) {
+        Integer id = Integer.parseInt(req.getScanUrl().split("-")[req.getScanUrl().split("-").length - 1]);
+        Map<String, String> params = new HashMap<>();
+        params.put("url", req.getScanUrl());
+        params.put("id", id.toString());
+        params.put("results", "false");
+        params.put("type", "COMPETITION");
+        try {
+            String sessionId = WebScanningService.getJSessionId(new URL("https://www.tipsport.cz/"));
+            String res = WebScanningService.getSiteContent(new URL("https://m.tipsport.cz/rest/offer/v1/offer"), params,
+                    new HttpCookie("JSESSIONID", sessionId));
+            List<Match> actMatches = Match.parseFromJson(res);
+            List<Match> oldMatches;
+            if (req.getLastState().length() > 0)
+                oldMatches = Arrays.stream(req.getLastState().split(";")).map(m -> Match.parse(m))
+                        .collect(Collectors.toList());
+            else
+                oldMatches = new ArrayList<>();
+            List<Match> newMatches = actMatches.stream().filter(m -> !oldMatches.contains(m))
+                    .collect(Collectors.toList());
+            req.changeState(String.join(";", actMatches.stream().map(m -> m.toString()).collect(Collectors.toList())));
+            return newMatches;
+        } catch (MalformedURLException ex) {
+            return new ArrayList<>();
+        }
     }
 
     public static boolean scanRequest(Request req) throws MalformedURLException {

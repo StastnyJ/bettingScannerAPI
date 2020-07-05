@@ -98,6 +98,11 @@ public class CloudStorage implements Storage {
         saveToCloudAsync();
     }
 
+    @Override
+    public void notifyUpdate() {
+        saveToCloud();
+    }
+
     private void saveToCloudAsync() {
         Thread async = new Thread(() -> saveToCloud());
         async.start();

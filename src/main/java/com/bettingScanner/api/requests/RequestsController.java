@@ -10,6 +10,7 @@ import com.bettingScanner.api.BettingScannerApiApplication;
 import com.bettingScanner.api.services.EmailingService;
 import com.bettingScanner.api.services.WebScanningService;
 import com.bettingScanner.api.storage.Storage;
+import com.bettingScanner.api.tipsport.Match;
 
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -53,10 +54,19 @@ public class RequestsController {
     }
 
     @PostMapping(value = "/")
-    public Request postMethodName(@RequestParam String url, @RequestParam String keyword, @RequestParam String email,
+    public Request addRequest(@RequestParam String url, @RequestParam String keyword, @RequestParam String email,
             @RequestParam(defaultValue = "") String matchUrl) {
 
         Request newRequest = new Request(url, matchUrl, keyword, email);
+        storage.addRequest(newRequest);
+        return newRequest;
+    }
+
+    @PostMapping(value = "/withStatus")
+    public StateRequest addStateRequest(@RequestParam String url, @RequestParam String email,
+            @RequestParam(defaultValue = "") String matchUrl) {
+
+        StateRequest newRequest = new StateRequest(url, matchUrl, email);
         storage.addRequest(newRequest);
         return newRequest;
     }
@@ -65,10 +75,19 @@ public class RequestsController {
     public List<Request> scan() {
         List<Request> requests = storage.getWaitingRequests();
         List<Request> result = new ArrayList<>();
+        List<List<Match>> stateResult = new ArrayList<>();
         for (Request act : requests) {
             try {
-                if (WebScanningService.scanRequest(act)) {
-                    result.add(act);
+                if (act.hasState()) {
+                    List<Match> changes = WebScanningService.scanStateRequest((StateRequest) act);
+                    if (changes.size() > 0) {
+                        stateResult.add(changes);
+                        EmailingService.notifyStateChange(changes, act.getEmail());
+                    }
+                } else {
+                    if (WebScanningService.scanRequest(act)) {
+                        result.add(act);
+                    }
                 }
             } catch (MalformedURLException ex) {
                 storage.deleteRequest(act);
@@ -77,6 +96,9 @@ public class RequestsController {
         if (result.size() > 0) {
             storage.finishRequests(result);
             EmailingService.notifyFounds(result);
+        }
+        if (stateResult.size() > 0) {
+            storage.notifyUpdate();
         }
         return result;
     }

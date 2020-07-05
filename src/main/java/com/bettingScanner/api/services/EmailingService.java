@@ -15,6 +15,7 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 import com.bettingScanner.api.requests.Request;
+import com.bettingScanner.api.tipsport.Match;
 
 public class EmailingService {
     private final static String from = "robotscanenr@gmail.com";
@@ -58,6 +59,15 @@ public class EmailingService {
 
     public static void testEmail(String email) {
         sendEmail(email, "Test email", "<b>This is test email</b>");
+    }
+
+    public static void notifyStateChange(List<Match> matches, String email) {
+        StringBuilder body = new StringBuilder();
+        body.append("<p>Scanning service found new matches on the following websites:</p><br/><ul>");
+        matches.stream().forEach(m -> body.append(String.format("<li><b>%s:</b> <a href=\"%s\">%s</a></li>",
+                m.getDescription(), m.getMatchUrl(), m.getMatchUrl())));
+        body.append("</ul>");
+        sendEmail(email, "Scanning service found new matches", body.toString());
     }
 
     private static MimeMessage getMimeMessage() {

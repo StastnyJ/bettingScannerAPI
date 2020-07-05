@@ -3,6 +3,8 @@ package com.bettingScanner.api.tipsport;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.print.attribute.standard.MediaSize.Other;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -57,5 +59,23 @@ public class Match {
 
         }
         return res;
+    }
+
+    public static Match parse(String raw) {
+        String[] splited = raw.split("<split>");
+        return new Match(splited[0], Integer.parseInt(splited[1]), splited[2]);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof Match))
+            return false;
+        Match other = (Match) obj;
+        return this.id == other.id;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%s<split>%d<split>%s", this.description, this.id, this.matchUrl);
     }
 }
