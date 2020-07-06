@@ -31,13 +31,15 @@ public class TipsportController {
     }
 
     @GetMapping("/matches")
-    public List<Match> getMatches(@RequestParam String url) {
-        Integer id = Integer.parseInt(url.split("-")[url.split("-").length - 1]);
+    public List<Match> getMatches(@RequestParam String url,
+            @RequestParam(defaultValue = "COMPETITION") String categoryType) {
+        url = url.replace("--", "-&");
+        Integer id = Integer.parseInt((url.split("-")[url.split("-").length - 1]).replace("&", "-"));
         Map<String, String> params = new HashMap<>();
         params.put("url", url);
         params.put("id", id.toString());
         params.put("results", "false");
-        params.put("type", "COMPETITION");
+        params.put("type", categoryType);
         try {
             String sessionId = WebScanningService.getJSessionId(new URL("https://www.tipsport.cz/"));
             String res = WebScanningService.getSiteContent(new URL("https://m.tipsport.cz/rest/offer/v1/offer"), params,

@@ -3,8 +3,6 @@ package com.bettingScanner.api.tipsport;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.print.attribute.standard.MediaSize.Other;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;

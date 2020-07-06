@@ -156,12 +156,13 @@ public class WebScanningService {
     }
 
     public static List<Match> scanStateRequest(StateRequest req) {
-        Integer id = Integer.parseInt(req.getScanUrl().split("-")[req.getScanUrl().split("-").length - 1]);
+        String url = req.getScanUrl().split("<categorySeparator>")[0].replace("--", "-&");
+        Integer id = Integer.parseInt((url.split("-")[url.split("-").length - 1]).replace("&", "-"));
         Map<String, String> params = new HashMap<>();
-        params.put("url", req.getScanUrl());
+        params.put("url", req.getScanUrl().split("<categorySeparator>")[0]);
         params.put("id", id.toString());
         params.put("results", "false");
-        params.put("type", "COMPETITION");
+        params.put("type", req.getScanUrl().split("<categorySeparator>")[1]);
         try {
             String sessionId = WebScanningService.getJSessionId(new URL("https://www.tipsport.cz/"));
             String res = WebScanningService.getSiteContent(new URL("https://m.tipsport.cz/rest/offer/v1/offer"), params,
