@@ -176,6 +176,7 @@ public class WebScanningService {
                 oldMatches = new ArrayList<>();
             List<Match> newMatches = actMatches.stream().filter(m -> !oldMatches.contains(m))
                     .collect(Collectors.toList());
+            actMatches.addAll(oldMatches.stream().filter(m -> !actMatches.contains(m)).collect(Collectors.toList()));
             req.changeState(String.join(";", actMatches.stream().map(m -> m.toString()).collect(Collectors.toList())));
             return newMatches;
         } catch (MalformedURLException ex) {
