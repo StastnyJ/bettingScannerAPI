@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.bettingScanner.api.notifications.ChatInfo;
 import com.bettingScanner.api.requests.Request;
 import com.bettingScanner.api.services.StringSharerService;
 
@@ -40,8 +41,8 @@ public class CloudStorage implements Storage {
     }
 
     @Override
-    public List<String> getEmails() {
-        return storage.getEmails();
+    public List<ChatInfo> getChats() {
+        return storage.getChats();
     }
 
     @Override
@@ -81,20 +82,14 @@ public class CloudStorage implements Storage {
     }
 
     @Override
-    public void addEmail(String email) {
-        storage.addEmail(email);
+    public void addChat(ChatInfo chat) {
+        storage.addChat(chat);
         saveToCloudAsync();
     }
 
     @Override
-    public void addEmails(List<String> emails) {
-        storage.addEmails(emails);
-        saveToCloudAsync();
-    }
-
-    @Override
-    public void removeEmail(String email) {
-        storage.removeEmail(email);
+    public void removeChat(ChatInfo chat) {
+        storage.removeChat(chat);
         saveToCloudAsync();
     }
 
@@ -114,9 +109,9 @@ public class CloudStorage implements Storage {
 
     private String serializeStorage() {
         StringBuilder res = new StringBuilder();
-        res.append("{\"emails\": [");
-        res.append(
-                String.join(",", storage.getEmails().stream().map(e -> "\"" + e + "\"").collect(Collectors.toList())));
+        res.append("{\"chats\": [");
+        res.append(String.join(",",
+                storage.getChats().stream().map(e -> "\"" + e.toString() + "\"").collect(Collectors.toList())));
         res.append("],\"requests\":[");
         res.append(String.join(",",
                 storage.getAllRequests().stream().map(r -> "\"" + r.toString() + "\"").collect(Collectors.toList())));
@@ -127,18 +122,15 @@ public class CloudStorage implements Storage {
     private void fillStorage() throws JSONException {
         String rawData = StringSharerService.getString(stringKey);
         JSONObject json = new JSONObject(rawData);
-        JSONArray emails = json.getJSONArray("emails");
+        JSONArray chats = json.getJSONArray("chats");
         JSONArray data = json.getJSONArray("requests");
         List<Request> requests = new ArrayList<>();
-        List<String> emailsList = new ArrayList<>();
         for (int i = 0; i < data.length(); i++) {
             requests.add(Request.parse(data.getString(i)));
         }
-        for (int i = 0; i < emails.length(); i++) {
-            emailsList.add(emails.getString(i));
+        for (int i = 0; i < chats.length(); i++) {
+            storage.addChat(ChatInfo.parseChat(chats.getString(i)));
         }
-
         storage.addRequests(requests);
-        storage.addEmails(emailsList);
     }
 }

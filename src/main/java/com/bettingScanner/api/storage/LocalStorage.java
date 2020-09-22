@@ -8,15 +8,16 @@ import java.util.Optional;
 // import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
 
+import com.bettingScanner.api.notifications.ChatInfo;
 import com.bettingScanner.api.requests.Request;
 
 public class LocalStorage implements Storage {
     private RequestsItem requests;
-    private List<String> emails;
+    private List<ChatInfo> chats;
 
     public LocalStorage() {
         this.requests = new RequestsItem();
-        this.emails = new ArrayList<>();
+        this.chats = new ArrayList<>();
     }
 
     @Override
@@ -72,27 +73,20 @@ public class LocalStorage implements Storage {
     }
 
     @Override
-    public List<String> getEmails() {
-        return this.emails.stream().collect(Collectors.toList());
+    public List<ChatInfo> getChats() {
+        return this.chats.stream().collect(Collectors.toList());
     }
 
     @Override
-    public void addEmail(String email) {
-        if (emails.stream().filter(e -> e.equals(email)).count() == 0)
-            this.emails.add(email);
+    public void addChat(ChatInfo chat) {
+        if (chats.stream().filter(e -> e.getChatId().equals(chat.getChatId())).count() == 0)
+            this.chats.add(chat);
     }
 
     @Override
-    public void addEmails(List<String> emails) {
-        if (emails == null)
-            return;
-        for (String email : emails)
-            this.addEmail(email);
-    }
-
-    @Override
-    public void removeEmail(String email) {
-        this.emails = this.emails.stream().filter(e -> !e.equals(email)).collect(Collectors.toList());
+    public void removeChat(ChatInfo chat) {
+        this.chats = this.chats.stream().filter(e -> !e.getChatId().equals(chat.getChatId()))
+                .collect(Collectors.toList());
     }
 
     @Override

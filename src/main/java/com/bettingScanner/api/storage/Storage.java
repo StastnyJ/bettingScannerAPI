@@ -3,6 +3,7 @@ package com.bettingScanner.api.storage;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.bettingScanner.api.notifications.ChatInfo;
 import com.bettingScanner.api.requests.Request;
 
 public interface Storage {
@@ -24,13 +25,11 @@ public interface Storage {
 
     public void finishRequests(List<Request> reqs);
 
-    public List<String> getEmails();
+    public List<ChatInfo> getChats();
 
-    public void addEmail(String email);
+    public void addChat(ChatInfo chat);
 
-    public void addEmails(List<String> emails);
-
-    public void removeEmail(String email);
+    public void removeChat(ChatInfo chat);
 
     public void notifyUpdate();
 
