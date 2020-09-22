@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.bettingScanner.api.BettingScannerApiApplication;
-import com.bettingScanner.api.services.EmailingService;
+import com.bettingScanner.api.services.TelegramService;
 import com.bettingScanner.api.services.WebScanningService;
 import com.bettingScanner.api.storage.Storage;
 import com.bettingScanner.api.tipsport.Match;
@@ -82,7 +82,7 @@ public class RequestsController {
                     List<Match> changes = WebScanningService.scanStateRequest((StateRequest) act);
                     if (changes.size() > 0) {
                         stateResult.add(changes);
-                        EmailingService.notifyStateChange(changes, act.getEmail());
+                        TelegramService.notifyStateChange(changes, act.getChatId());
                     }
                 } else {
                     if (WebScanningService.scanRequest(act)) {
@@ -95,7 +95,7 @@ public class RequestsController {
         }
         if (result.size() > 0) {
             storage.finishRequests(result);
-            EmailingService.notifyFounds(result);
+            TelegramService.notifyFounds(result);
         }
         if (stateResult.size() > 0) {
             storage.notifyUpdate();

@@ -6,11 +6,11 @@ public class Request {
     protected final String scanUrl;
     protected final String displayUrl;
     protected final String keyword;
-    protected final String email;
+    protected final String chatId;
     protected boolean finnished;
     protected final LocalDateTime createdDate;
 
-    public Request(String scanUrl, String displayUrl, String keyword, String email, LocalDateTime createDate,
+    public Request(String scanUrl, String displayUrl, String keyword, String chatId, LocalDateTime createDate,
             boolean isFinnished) {
         if (scanUrl == null || scanUrl.length() == 0)
             throw new NullPointerException("Scan url can not be null or empty");
@@ -21,33 +21,33 @@ public class Request {
         this.scanUrl = scanUrl;
         this.displayUrl = displayUrl;
         this.keyword = keyword;
-        this.email = email;
+        this.chatId = chatId;
         this.createdDate = createDate;
         this.finnished = isFinnished;
     }
 
-    public Request(String scanUrl, String displayUrl, String keyword, String email) {
-        this(scanUrl, displayUrl, keyword, email, null, false);
+    public Request(String scanUrl, String displayUrl, String keyword, String chatId) {
+        this(scanUrl, displayUrl, keyword, chatId, null, false);
     }
 
-    public Request(String scanUrl, String displayUrl, String keyword, String email, boolean isFinnished) {
-        this(scanUrl, displayUrl, keyword, email, null, isFinnished);
+    public Request(String scanUrl, String displayUrl, String keyword, String chatId, boolean isFinnished) {
+        this(scanUrl, displayUrl, keyword, chatId, null, isFinnished);
     }
 
-    public Request(String scanUrl, String keyword, String email, LocalDateTime createdDate) {
-        this(scanUrl, scanUrl, keyword, email, createdDate, false);
+    public Request(String scanUrl, String keyword, String chatId, LocalDateTime createdDate) {
+        this(scanUrl, scanUrl, keyword, chatId, createdDate, false);
     }
 
-    public Request(String scanUrl, String keyword, String email, LocalDateTime createdDate, boolean isFinnished) {
-        this(scanUrl, scanUrl, keyword, email, createdDate, isFinnished);
+    public Request(String scanUrl, String keyword, String chatId, LocalDateTime createdDate, boolean isFinnished) {
+        this(scanUrl, scanUrl, keyword, chatId, createdDate, isFinnished);
     }
 
-    public Request(String scanUrl, String keyword, String email) {
-        this(scanUrl, scanUrl, keyword, email);
+    public Request(String scanUrl, String keyword, String chatId) {
+        this(scanUrl, scanUrl, keyword, chatId);
     }
 
-    public Request(String scanUrl, String keyword, String email, boolean isFinnished) {
-        this(scanUrl, scanUrl, keyword, email, isFinnished);
+    public Request(String scanUrl, String keyword, String chatId, boolean isFinnished) {
+        this(scanUrl, scanUrl, keyword, chatId, isFinnished);
     }
 
     public String getScanUrl() {
@@ -66,8 +66,8 @@ public class Request {
         return createdDate;
     }
 
-    public String getEmail() {
-        return email;
+    public String getChatId() {
+        return chatId;
     }
 
     public boolean isFinnished() {
@@ -98,7 +98,7 @@ public class Request {
 
     @Override
     public String toString() {
-        return String.format("%s|%s|%s|%s|%s|%b", scanUrl, displayUrl, keyword, email, createdDate.toString(),
+        return String.format("%s|%s|%s|%s|%s|%b", scanUrl, displayUrl, keyword, chatId, createdDate.toString(),
                 finnished);
     }
 

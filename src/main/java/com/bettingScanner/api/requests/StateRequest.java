@@ -6,14 +6,14 @@ public class StateRequest extends Request {
 
     private String lastState;
 
-    public StateRequest(String scanUrl, String displayUrl, String keyword, String email, LocalDateTime createDate,
+    public StateRequest(String scanUrl, String displayUrl, String keyword, String chatId, LocalDateTime createDate,
             String lastState, boolean isFinnished) {
-        super(scanUrl, displayUrl, keyword, email, createDate, isFinnished);
+        super(scanUrl, displayUrl, keyword, chatId, createDate, isFinnished);
         this.lastState = lastState;
     }
 
-    public StateRequest(String scanUrl, String displayUrl, String email) {
-        this(scanUrl, displayUrl, "Watching status", email, LocalDateTime.now(), "", false);
+    public StateRequest(String scanUrl, String displayUrl, String chatId) {
+        this(scanUrl, displayUrl, "Watching status", chatId, LocalDateTime.now(), "", false);
     }
 
     public String getLastState() {
@@ -26,7 +26,7 @@ public class StateRequest extends Request {
 
     @Override
     public String toString() {
-        return String.format("%s|%s|%s|%s|%s|%s|%b", scanUrl, displayUrl, keyword, email, createdDate.toString(),
+        return String.format("%s|%s|%s|%s|%s|%s|%b", scanUrl, displayUrl, keyword, chatId, createdDate.toString(),
                 lastState, finnished);
     }
 

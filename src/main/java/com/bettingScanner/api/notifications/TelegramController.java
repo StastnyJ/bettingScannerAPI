@@ -3,6 +3,7 @@ package com.bettingScanner.api.notifications;
 import java.util.List;
 
 import com.bettingScanner.api.BettingScannerApiApplication;
+import com.bettingScanner.api.services.TelegramService;
 import com.bettingScanner.api.storage.Storage;
 
 import org.json.JSONException;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -33,5 +35,11 @@ public class TelegramController {
     @GetMapping("/getChats")
     public List<ChatInfo> getChats() {
         return storage.getChats();
+    }
+
+    @PostMapping("/test")
+    public ResponseEntity<Void> test(@RequestParam String chatId) {
+        TelegramService.testNotification(chatId);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
