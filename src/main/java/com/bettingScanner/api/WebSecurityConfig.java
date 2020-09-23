@@ -1,23 +1,27 @@
-package com.bettingScanner.api;
+// package com.bettingScanner.api;
 
-import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
-// import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+// import org.springframework.context.annotation.Configuration;
+// import
+// org.springframework.security.config.annotation.web.builders.HttpSecurity;
+// import
+// org.springframework.security.config.annotation.web.builders.WebSecurity;
+// import
+// org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+// import
+// org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
-@Configuration
+// @Configuration
 // @EnableWebSecurity
-public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+// public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http.csrf().disable().httpBasic().and().authorizeRequests().anyRequest().authenticated();
-    }
+// @Override
+// protected void configure(HttpSecurity http) throws Exception {
+// http.csrf().disable().httpBasic().and().authorizeRequests().anyRequest().authenticated();
+// }
 
-    @Override
-    public void configure(WebSecurity web) throws Exception {
-        web.ignoring().antMatchers("/notifications/v1/register");
-    }
+// @Override
+// public void configure(WebSecurity web) throws Exception {
+// web.ignoring().antMatchers("/notifications/v1/register");
+// }
 
-}
+// }
