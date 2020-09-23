@@ -12,13 +12,11 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
-    @Autowired
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable().httpBasic().and().authorizeRequests().anyRequest().authenticated();
     }
 
     @Override
-    @Autowired
     public void configure(WebSecurity web) throws Exception {
         web.ignoring().antMatchers("/notifications/v1/register");
     }
