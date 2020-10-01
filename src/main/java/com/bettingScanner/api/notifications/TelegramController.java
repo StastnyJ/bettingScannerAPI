@@ -1,6 +1,7 @@
 package com.bettingScanner.api.notifications;
 
 import java.util.List;
+import java.util.Random;
 
 import com.bettingScanner.api.BettingScannerApiApplication;
 import com.bettingScanner.api.services.TelegramService;
@@ -26,7 +27,12 @@ public class TelegramController {
     public ResponseEntity<Void> register(@RequestBody String rawBody) throws JSONException {
         JSONObject obj = new JSONObject(rawBody);
         JSONObject chat = obj.getJSONObject("message").getJSONObject("chat");
-        String name = chat.getString("first_name") + " " + chat.getString("last_name");
+        String name;
+        try {
+            name = chat.getString("first_name") + " " + chat.getString("last_name");
+        } catch (Exception ex) {
+            name = "ProxyName," + Integer.toString(new Random().nextInt(9999));
+        }
         String id = Integer.toString(chat.getInt("id"));
         storage.addChat(new ChatInfo(id, name));
         return new ResponseEntity<>(HttpStatus.OK);
