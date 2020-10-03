@@ -6,7 +6,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 public class StringSharerService {
-    private final static String address = "http://erecept.lekarnaselska.cz/stringSharer/api.php";
+    private final static String address = "https://erecept.lekarnaselska.cz/stringSharer/api.php";
 
     public static String getString(String key) {
         try {
