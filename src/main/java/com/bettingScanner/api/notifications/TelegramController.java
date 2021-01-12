@@ -10,6 +10,7 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -40,8 +41,38 @@ public class TelegramController {
     }
 
     @GetMapping("/getChats")
-    public List<ChatInfo> getChats() {
-        return chatsRepository.findAll();
+    public List<ChatInfo> getChats(@RequestParam(required = false, defaultValue = "true") Boolean visibleOnly) {
+        return visibleOnly ? chatsRepository.findByVisible(true) : chatsRepository.findAll();
+    }
+
+    @PostMapping("/rename")
+    public ChatInfo renameChat(@RequestParam String id, @RequestParam String name) {
+        ChatInfo chat = chatsRepository.findById(id).orElse(null);
+        if (chat == null)
+            throw new IllegalArgumentException();
+
+        chat.setName(name);
+
+        chatsRepository.saveAndFlush(chat);
+        return chat;
+    }
+
+    @PostMapping("/toggleVisibility")
+    public ChatInfo toggleVisibility(@RequestParam String id) {
+        ChatInfo chat = chatsRepository.findById(id).orElse(null);
+        if (chat == null)
+            throw new IllegalArgumentException();
+
+        chat.setVisible(!chat.isVisible());
+
+        chatsRepository.saveAndFlush(chat);
+        return chat;
+    }
+
+    @DeleteMapping("/")
+    public void deleteChat(@RequestParam String id) {
+        chatsRepository.deleteById(id);
+        chatsRepository.flush();
     }
 
     @PostMapping("/test")

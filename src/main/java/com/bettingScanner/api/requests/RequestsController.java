@@ -24,24 +24,31 @@ public class RequestsController {
     RequestsRepository requestsRepository;
 
     @GetMapping("/all")
-    public List<Request> getAllRequests() {
-        return requestsRepository.findAll().stream().sorted((a, b) -> {
+    public List<Request> getAllRequests(@RequestParam(required = false, defaultValue = "true") Boolean visibleOnly) {
+        List<Request> res = requestsRepository.findAll().stream().sorted((a, b) -> {
             if (!a.isFinnished() && b.isFinnished())
                 return -1;
             if (a.isFinnished() && !b.isFinnished())
                 return 1;
             return 0;
         }).collect(Collectors.toList());
+        return visibleOnly ? filterInvisible(res) : res;
     }
 
     @GetMapping("/waiting")
-    public List<Request> getWaitingRequests() {
-        return requestsRepository.findByFinnished(false);
+    public List<Request> getWaitingRequests(
+            @RequestParam(required = false, defaultValue = "true") Boolean visibleOnly) {
+        List<Request> res = requestsRepository.findByFinnished(false);
+        return visibleOnly ? filterInvisible(res) : res;
+
     }
 
     @GetMapping("/finished")
-    public List<Request> getFinishedRequests() {
-        return requestsRepository.findByFinnished(true);
+    public List<Request> getFinishedRequests(
+            @RequestParam(required = false, defaultValue = "true") Boolean visibleOnly) {
+
+        List<Request> res = requestsRepository.findByFinnished(true);
+        return visibleOnly ? filterInvisible(res) : res;
     }
 
     @RequestMapping(value = "/", method = RequestMethod.DELETE)
@@ -67,9 +74,21 @@ public class RequestsController {
         return newRequest;
     }
 
+    @PostMapping("/toggleVisibility")
+    public Request toggleVisibility(@RequestParam Integer id) {
+        Request req = requestsRepository.findById(id).orElse(null);
+        if (req == null)
+            throw new IllegalArgumentException();
+
+        req.setVisibe(!req.isVisibe());
+
+        requestsRepository.saveAndFlush(req);
+        return req;
+    }
+
     @PostMapping(value = "/scan")
     public List<Request> scan() {
-        List<Request> requests = getWaitingRequests();
+        List<Request> requests = getWaitingRequests(false);
         List<Request> result = new ArrayList<>();
         List<List<Match>> stateResult = new ArrayList<>();
         for (Request act : requests) {
@@ -96,5 +115,9 @@ public class RequestsController {
             TelegramService.notifyFounds(result);
         requestsRepository.flush();
         return result;
+    }
+
+    private List<Request> filterInvisible(List<Request> all) {
+        return all.stream().filter(r -> r.isVisibe()).collect(Collectors.toList());
     }
 }
