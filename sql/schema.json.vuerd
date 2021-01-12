@@ -18,7 +18,7 @@
     "database": "MySQL",
     "databaseName": "",
     "canvasType": "GeneratorCode",
-    "language": "JPA",
+    "language": "TypeScript",
     "tableCase": "pascalCase",
     "columnCase": "camelCase",
     "setting": {
