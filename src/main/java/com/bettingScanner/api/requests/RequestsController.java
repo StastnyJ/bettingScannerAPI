@@ -79,23 +79,22 @@ public class RequestsController {
                     if (changes.size() > 0) {
                         stateResult.add(changes);
                         TelegramService.notifyStateChange(changes, act.getChatId());
+                        requestsRepository.save(act);
                     }
                 } else {
                     if (WebScanningService.scanRequest(act)) {
                         result.add(act);
+                        act.setFinnished(true);
+                        requestsRepository.save(act);
                     }
                 }
             } catch (MalformedURLException ex) {
                 requestsRepository.deleteById(act.getId());
             }
         }
-        if (result.size() > 0) {
-            // storage.finishRequests(result); TODO
+        if (result.size() > 0)
             TelegramService.notifyFounds(result);
-        }
-        if (stateResult.size() > 0) {
-            // storage.notifyUpdate(); TODO
-        }
+        requestsRepository.flush();
         return result;
     }
 }
