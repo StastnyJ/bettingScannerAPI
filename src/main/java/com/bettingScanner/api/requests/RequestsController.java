@@ -1,18 +1,15 @@
 package com.bettingScanner.api.requests;
 
 import java.net.MalformedURLException;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.bettingScanner.api.BettingScannerApiApplication;
 import com.bettingScanner.api.services.TelegramService;
 import com.bettingScanner.api.services.WebScanningService;
-import com.bettingScanner.api.storage.Storage;
 import com.bettingScanner.api.tipsport.Match;
 
-import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -23,12 +20,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 @RestController
 @RequestMapping("/requests/v1")
 public class RequestsController {
-
-    final Storage storage = BettingScannerApiApplication.localStorage;
+    @Autowired
+    RequestsRepository requestsRepository;
 
     @GetMapping("/all")
     public List<Request> getAllRequests() {
-        return storage.getAllRequests().stream().sorted((a, b) -> {
+        return requestsRepository.findAll().stream().sorted((a, b) -> {
             if (!a.isFinnished() && b.isFinnished())
                 return -1;
             if (a.isFinnished() && !b.isFinnished())
@@ -39,18 +36,17 @@ public class RequestsController {
 
     @GetMapping("/waiting")
     public List<Request> getWaitingRequests() {
-        return storage.getWaitingRequests();
+        return requestsRepository.findByFinnished(false);
     }
 
     @GetMapping("/finished")
     public List<Request> getFinishedRequests() {
-        return storage.getFinishedRequests();
+        return requestsRepository.findByFinnished(true);
     }
 
     @RequestMapping(value = "/", method = RequestMethod.DELETE)
-    public void deleteRequest(@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime date) {
-
-        storage.deleteRequest(date);
+    public void deleteRequest(@RequestParam Integer id) {
+        requestsRepository.deleteById(id);
     }
 
     @PostMapping(value = "/")
@@ -58,28 +54,28 @@ public class RequestsController {
             @RequestParam(defaultValue = "") String matchUrl) {
 
         Request newRequest = new Request(url, matchUrl, keyword, email);
-        storage.addRequest(newRequest);
+        requestsRepository.save(newRequest);
         return newRequest;
     }
 
     @PostMapping(value = "/withStatus")
-    public StateRequest addStateRequest(@RequestParam String url, @RequestParam String email,
+    public Request addStateRequest(@RequestParam String url, @RequestParam String category, @RequestParam String email,
             @RequestParam(defaultValue = "") String matchUrl) {
 
-        StateRequest newRequest = new StateRequest(url, matchUrl, email);
-        storage.addRequest(newRequest);
+        Request newRequest = new Request(url, matchUrl, email, category, "");
+        requestsRepository.save(newRequest);
         return newRequest;
     }
 
     @PostMapping(value = "/scan")
     public List<Request> scan() {
-        List<Request> requests = storage.getWaitingRequests();
+        List<Request> requests = getWaitingRequests();
         List<Request> result = new ArrayList<>();
         List<List<Match>> stateResult = new ArrayList<>();
         for (Request act : requests) {
             try {
-                if (act.hasState()) {
-                    List<Match> changes = WebScanningService.scanStateRequest((StateRequest) act);
+                if (act.getRequestType().equals("STATE")) {
+                    List<Match> changes = WebScanningService.scanStateRequest(act);
                     if (changes.size() > 0) {
                         stateResult.add(changes);
                         TelegramService.notifyStateChange(changes, act.getChatId());
@@ -90,15 +86,15 @@ public class RequestsController {
                     }
                 }
             } catch (MalformedURLException ex) {
-                storage.deleteRequest(act);
+                requestsRepository.deleteById(act.getId());
             }
         }
         if (result.size() > 0) {
-            storage.finishRequests(result);
+            // storage.finishRequests(result); TODO
             TelegramService.notifyFounds(result);
         }
         if (stateResult.size() > 0) {
-            storage.notifyUpdate();
+            // storage.notifyUpdate(); TODO
         }
         return result;
     }

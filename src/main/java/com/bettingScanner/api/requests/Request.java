@@ -1,111 +1,160 @@
 package com.bettingScanner.api.requests;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Lob;
+import javax.persistence.Table;
+
+@Entity
+@Table(name = "requests")
 public class Request {
-    protected final String scanUrl;
-    protected final String displayUrl;
-    protected final String keyword;
-    protected final String chatId;
-    protected boolean finnished;
-    protected final LocalDateTime createdDate;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+    private String scanUrl;
+    private String displayUrl;
+    private String keyword;
+    private String chatId;
+    private String userId;
+    private Boolean finnished;
+    private Boolean visibe;
+    private LocalDate createdDate;
+    private String tipsportCategory;
+    @Lob
+    private String state;
+    private String requestType;
 
-    public Request(String scanUrl, String displayUrl, String keyword, String chatId, LocalDateTime createDate,
-            boolean isFinnished) {
-        if (scanUrl == null || scanUrl.length() == 0)
-            throw new NullPointerException("Scan url can not be null or empty");
-        if (displayUrl == null || displayUrl.length() == 0)
-            displayUrl = scanUrl;
-        if (createDate == null)
-            createDate = LocalDateTime.now();
+    public Request() {
+    }
+
+    public Request(String scanUrl, String displayUrl, String keyword, String chatId, String userId, Boolean finnished,
+            Boolean visibe, LocalDate createdDate, String tipsportCategory, String state, String requestType) {
         this.scanUrl = scanUrl;
         this.displayUrl = displayUrl;
         this.keyword = keyword;
         this.chatId = chatId;
-        this.createdDate = createDate;
-        this.finnished = isFinnished;
+        this.userId = userId;
+        this.finnished = finnished;
+        this.visibe = visibe;
+        this.createdDate = createdDate;
+        this.tipsportCategory = tipsportCategory;
+        this.state = state;
+        this.requestType = requestType;
     }
 
-    public Request(String scanUrl, String displayUrl, String keyword, String chatId) {
-        this(scanUrl, displayUrl, keyword, chatId, null, false);
+    public Request(String url, String matchUrl, String keyword, String chatId) {
+        this(url, matchUrl, keyword, chatId, null, false, true, LocalDate.now(), "", "", "NORMAL");
     }
 
-    public Request(String scanUrl, String displayUrl, String keyword, String chatId, boolean isFinnished) {
-        this(scanUrl, displayUrl, keyword, chatId, null, isFinnished);
+    public Request(String url, String matchUrl, String chatId, String tipsportCategory, String inintialState) {
+        this(url, matchUrl, "", chatId, null, false, true, LocalDate.now(), tipsportCategory, inintialState, "STATE");
     }
 
-    public Request(String scanUrl, String keyword, String chatId, LocalDateTime createdDate) {
-        this(scanUrl, scanUrl, keyword, chatId, createdDate, false);
+    public Integer getId() {
+        return this.id;
     }
 
-    public Request(String scanUrl, String keyword, String chatId, LocalDateTime createdDate, boolean isFinnished) {
-        this(scanUrl, scanUrl, keyword, chatId, createdDate, isFinnished);
-    }
-
-    public Request(String scanUrl, String keyword, String chatId) {
-        this(scanUrl, scanUrl, keyword, chatId);
-    }
-
-    public Request(String scanUrl, String keyword, String chatId, boolean isFinnished) {
-        this(scanUrl, scanUrl, keyword, chatId, isFinnished);
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public String getScanUrl() {
-        return scanUrl;
+        return this.scanUrl;
+    }
+
+    public void setScanUrl(String scanUrl) {
+        this.scanUrl = scanUrl;
     }
 
     public String getDisplayUrl() {
-        return displayUrl;
+        return this.displayUrl;
+    }
+
+    public void setDisplayUrl(String displayUrl) {
+        this.displayUrl = displayUrl;
     }
 
     public String getKeyword() {
-        return keyword;
+        return this.keyword;
     }
 
-    public LocalDateTime getCreatedDate() {
-        return createdDate;
+    public void setKeyword(String keyword) {
+        this.keyword = keyword;
     }
 
     public String getChatId() {
-        return chatId;
+        return this.chatId;
     }
 
-    public boolean isFinnished() {
-        return finnished;
+    public void setChatId(String chatId) {
+        this.chatId = chatId;
     }
 
-    public void finish() {
-        this.finnished = true;
+    public String getUserId() {
+        return this.userId;
     }
 
-    public boolean hasState() {
-        return false;
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
-    public static Request parse(String raw) {
-        String[] data = raw.split("\\|");
-        if (data.length == 6)
-            return new Request(data[0], data[1], data[2], data[3], LocalDateTime.parse(data[4]),
-                    Boolean.parseBoolean(data[5]));
-        else if (data.length == 7)
-            return StateRequest.parse(raw);
-        return Request.empty();
+    public Boolean isFinnished() {
+        return this.finnished;
     }
 
-    public static Request empty() {
-        return new Request("", "", "");
+    public Boolean getFinnished() {
+        return this.finnished;
     }
 
-    @Override
-    public String toString() {
-        return String.format("%s|%s|%s|%s|%s|%b", scanUrl, displayUrl, keyword, chatId, createdDate.toString(),
-                finnished);
+    public void setFinnished(Boolean finnished) {
+        this.finnished = finnished;
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null || !(obj instanceof Request))
-            return false;
-        return this.createdDate.equals(((Request) obj).getCreatedDate());
+    public Boolean isVisibe() {
+        return this.visibe;
+    }
+
+    public Boolean getVisibe() {
+        return this.visibe;
+    }
+
+    public void setVisibe(Boolean visibe) {
+        this.visibe = visibe;
+    }
+
+    public LocalDate getCreatedDate() {
+        return this.createdDate;
+    }
+
+    public void setCreatedDate(LocalDate createdDate) {
+        this.createdDate = createdDate;
+    }
+
+    public String getTipsportCategory() {
+        return this.tipsportCategory;
+    }
+
+    public void setTipsportCategory(String tipsportCategory) {
+        this.tipsportCategory = tipsportCategory;
+    }
+
+    public String getState() {
+        return this.state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
+
+    public String getRequestType() {
+        return this.requestType;
+    }
+
+    public void setRequestType(String requestType) {
+        this.requestType = requestType;
     }
 }

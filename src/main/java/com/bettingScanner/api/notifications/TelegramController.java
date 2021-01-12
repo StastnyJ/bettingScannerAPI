@@ -3,12 +3,11 @@ package com.bettingScanner.api.notifications;
 import java.util.List;
 import java.util.Random;
 
-import com.bettingScanner.api.BettingScannerApiApplication;
 import com.bettingScanner.api.services.TelegramService;
-import com.bettingScanner.api.storage.Storage;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,7 +20,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/notifications/v1")
 public class TelegramController {
-    final Storage storage = BettingScannerApiApplication.localStorage;
+
+    @Autowired
+    private ChatsRepository chatsRepository;
 
     @PostMapping("/register")
     public ResponseEntity<Void> register(@RequestBody String rawBody) throws JSONException {
@@ -34,13 +35,13 @@ public class TelegramController {
             name = "ProxyName," + Integer.toString(new Random().nextInt(9999));
         }
         String id = Integer.toString(chat.getInt("id"));
-        storage.addChat(new ChatInfo(id, name));
+        chatsRepository.saveAndFlush(new ChatInfo(id, name));
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping("/getChats")
     public List<ChatInfo> getChats() {
-        return storage.getChats();
+        return chatsRepository.findAll();
     }
 
     @PostMapping("/test")

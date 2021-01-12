@@ -1,31 +1,56 @@
 package com.bettingScanner.api.notifications;
 
-public class ChatInfo {
-    private final String chatId;
-    private final String userName;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
-    public ChatInfo(String chatId, String userName) {
+@Table(name = "Chats")
+@Entity
+public class ChatInfo {
+    @Id
+    private String chatId;
+    private String name;
+    private Boolean visible;
+
+    public ChatInfo() {
+    }
+
+    public ChatInfo(String chatId, String name) {
         this.chatId = chatId;
-        this.userName = userName;
+        this.name = name;
+        this.visible = true;
     }
 
     public String getChatId() {
-        return chatId;
+        return this.chatId;
     }
 
-    public String getUserName() {
-        return userName;
+    public void setChatId(String chatId) {
+        this.chatId = chatId;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Boolean isVisible() {
+        return this.visible;
+    }
+
+    public Boolean getVisible() {
+        return this.visible;
+    }
+
+    public void setVisible(Boolean visible) {
+        this.visible = visible;
     }
 
     @Override
     public String toString() {
-        return this.userName + " (" + this.chatId + ")";
-    }
-
-    public static ChatInfo parseChat(String raw) {
-        int idStart = raw.lastIndexOf("(") + 1;
-        String id = raw.substring(idStart, raw.length() - 1);
-        String name = raw.substring(0, idStart - 2);
-        return new ChatInfo(id, name);
+        return name + " (" + chatId + ")";
     }
 }
