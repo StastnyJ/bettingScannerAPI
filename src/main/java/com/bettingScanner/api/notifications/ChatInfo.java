@@ -37,10 +37,6 @@ public class ChatInfo {
         this.name = name;
     }
 
-    public Boolean isVisible() {
-        return this.visible;
-    }
-
     public Boolean getVisible() {
         return this.visible;
     }

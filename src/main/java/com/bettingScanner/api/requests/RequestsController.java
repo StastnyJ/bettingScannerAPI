@@ -26,9 +26,9 @@ public class RequestsController {
     @GetMapping("/all")
     public List<Request> getAllRequests(@RequestParam(required = false, defaultValue = "true") Boolean visibleOnly) {
         List<Request> res = requestsRepository.findAll().stream().sorted((a, b) -> {
-            if (!a.isFinnished() && b.isFinnished())
+            if (!a.getFinnished() && b.getFinnished())
                 return -1;
-            if (a.isFinnished() && !b.isFinnished())
+            if (a.getFinnished() && !b.getFinnished())
                 return 1;
             return 0;
         }).collect(Collectors.toList());
@@ -80,7 +80,7 @@ public class RequestsController {
         if (req == null)
             throw new IllegalArgumentException();
 
-        req.setVisibe(!req.isVisibe());
+        req.setVisibe(!req.getVisibe());
 
         requestsRepository.saveAndFlush(req);
         return req;
@@ -118,6 +118,6 @@ public class RequestsController {
     }
 
     private List<Request> filterInvisible(List<Request> all) {
-        return all.stream().filter(r -> r.isVisibe()).collect(Collectors.toList());
+        return all.stream().filter(r -> r.getVisibe()).collect(Collectors.toList());
     }
 }

@@ -63,7 +63,7 @@ public class TelegramController {
         if (chat == null)
             throw new IllegalArgumentException();
 
-        chat.setVisible(!chat.isVisible());
+        chat.setVisible(!chat.getVisible());
 
         chatsRepository.saveAndFlush(chat);
         return chat;

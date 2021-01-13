@@ -102,20 +102,12 @@ public class Request {
         this.userId = userId;
     }
 
-    public Boolean isFinnished() {
-        return this.finnished;
-    }
-
     public Boolean getFinnished() {
         return this.finnished;
     }
 
     public void setFinnished(Boolean finnished) {
         this.finnished = finnished;
-    }
-
-    public Boolean isVisibe() {
-        return this.visibe;
     }
 
     public Boolean getVisibe() {
