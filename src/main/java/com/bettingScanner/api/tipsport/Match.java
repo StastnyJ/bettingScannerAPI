@@ -37,7 +37,7 @@ public class Match {
             JSONArray tabs = json.getJSONArray("offerSuperSports").getJSONObject(0).getJSONArray("tabs");
             for (int i = 0; i < tabs.length(); i++) {
                 JSONObject tab = tabs.getJSONObject(i);
-                JSONArray competitions = tab.getJSONArray("offerCompetitions");
+                JSONArray competitions = tab.getJSONArray("offerCompetitionAnnuals");
                 for (int j = 0; j < competitions.length(); j++) {
                     JSONObject comp = competitions.getJSONObject(j);
                     JSONArray matches = comp.getJSONArray("offerMatches");

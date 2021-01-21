@@ -36,7 +36,7 @@ public class TipsportController {
         url = url.replace("--", "-&");
         Integer id = Integer.parseInt((url.split("-")[url.split("-").length - 1]).replace("&", "-"));
         Map<String, String> params = new HashMap<>();
-        params.put("url", url);
+        params.put("url", url.replace("-&", "--"));
         params.put("id", id.toString());
         params.put("results", "false");
         params.put("type", categoryType);
