@@ -1,6 +1,7 @@
 package com.bettingScanner.api.requests;
 
 import java.net.MalformedURLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -74,6 +75,17 @@ public class RequestsController {
         return newRequest;
     }
 
+    @PostMapping(value = "/repeatedKeyword")
+    public Request addRepeatedKeywordRequest(@RequestParam String url, @RequestParam String category,
+            @RequestParam String email, @RequestParam String keyword,
+            @RequestParam(defaultValue = "") String matchUrl) {
+
+        Request newRequest = new Request(url, matchUrl, keyword, email, null, false, true, LocalDate.now(), category,
+                "", "REPEATED");
+        requestsRepository.save(newRequest);
+        return newRequest;
+    }
+
     @PostMapping("/toggleVisibility")
     public Request toggleVisibility(@RequestParam Integer id) {
         Request req = requestsRepository.findById(id).orElse(null);
@@ -93,12 +105,26 @@ public class RequestsController {
         List<List<Match>> stateResult = new ArrayList<>();
         for (Request act : requests) {
             try {
-                if (act.getRequestType().equals("STATE")) {
+                if (act.getRequestType().equals("STATE") || act.getRequestType().equals("REPEATED")) {
                     List<Match> changes = WebScanningService.scanStateRequest(act);
-                    if (changes.size() > 0) {
-                        stateResult.add(changes);
-                        TelegramService.notifyStateChange(changes, act.getChatId());
-                        requestsRepository.save(act);
+                    if (act.getRequestType().equals("STATE")) {
+                        if (changes.size() > 0) {
+                            stateResult.add(changes);
+                            TelegramService.notifyStateChange(changes, act.getChatId());
+                            requestsRepository.save(act);
+                        }
+                    } else {
+                        for (Match change : changes) {
+                            Request req = addRequest(
+                                    "https://m.tipsport.cz/rest/offer/v1/matches/" + change.getId()
+                                            + "/event-tables?fromResults=false",
+                                    act.getKeyword(), act.getChatId(), change.getMatchUrl());
+                            if (WebScanningService.scanRequest(req)) {
+                                result.add(act);
+                                act.setFinnished(true);
+                                requestsRepository.save(act);
+                            }
+                        }
                     }
                 } else {
                     if (WebScanningService.scanRequest(act)) {
