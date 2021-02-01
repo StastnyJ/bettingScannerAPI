@@ -115,14 +115,18 @@ public class RequestsController {
                         }
                     } else {
                         for (Match change : changes) {
-                            Request req = addRequest(
+
+                            Request req = new Request(
                                     "https://m.tipsport.cz/rest/offer/v1/matches/" + change.getId()
                                             + "/event-tables?fromResults=false",
-                                    act.getKeyword(), act.getChatId(), change.getMatchUrl());
+                                    change.getMatchUrl(), act.getKeyword(), act.getChatId(), null, false, true,
+                                    LocalDate.now(), "", "", "GENERATED");
+                            ;
+                            requestsRepository.save(req);
                             if (WebScanningService.scanRequest(req)) {
-                                result.add(act);
-                                act.setFinnished(true);
-                                requestsRepository.save(act);
+                                result.add(req);
+                                req.setFinnished(true);
+                                requestsRepository.save(req);
                             }
                         }
                     }
