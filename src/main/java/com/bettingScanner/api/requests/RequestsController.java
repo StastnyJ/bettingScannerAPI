@@ -137,7 +137,7 @@ public class RequestsController {
                         requestsRepository.save(act);
                     }
                 }
-            } catch (MalformedURLException ex) {
+            } catch (Exception ex) {
                 requestsRepository.deleteById(act.getId());
             }
         }
