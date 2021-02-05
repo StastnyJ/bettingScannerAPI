@@ -99,7 +99,8 @@ public class RequestsController {
     }
 
     @PostMapping(value = "/scan")
-    public List<Request> scan() {
+    public String scan() {
+        String res = "";
         List<Request> requests = getWaitingRequests(false);
         List<Request> result = new ArrayList<>();
         List<List<Match>> stateResult = new ArrayList<>();
@@ -137,14 +138,16 @@ public class RequestsController {
                         requestsRepository.save(act);
                     }
                 }
-            } catch (Exception ex) {
+            } catch (MalformedURLException ex) {
                 requestsRepository.deleteById(act.getId());
+            } catch (Exception ex) {
+                res += "[ERROR] " + act.getId() + " " + ex.getMessage() + "\n";
             }
         }
         if (result.size() > 0)
             TelegramService.notifyFounds(result);
         requestsRepository.flush();
-        return result;
+        return res + " " + result.size() + " requests found";
     }
 
     private List<Request> filterInvisible(List<Request> all) {
