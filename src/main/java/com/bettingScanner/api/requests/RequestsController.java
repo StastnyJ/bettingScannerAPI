@@ -147,7 +147,7 @@ public class RequestsController {
         if (result.size() > 0)
             TelegramService.notifyFounds(result);
         requestsRepository.flush();
-        return res + " " + result.size() + " requests found";
+        return res + " " + result.size() + " requests found, " + requests.size() + "scanned";
     }
 
     private List<Request> filterInvisible(List<Request> all) {
