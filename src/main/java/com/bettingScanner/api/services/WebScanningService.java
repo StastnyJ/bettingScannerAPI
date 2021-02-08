@@ -63,7 +63,7 @@ public class WebScanningService {
     }
 
     public static String getSiteContent(URL url, List<HttpCookie> cookies, String authorization) {
-        HttpURLConnection.setFollowRedirects(false);
+        // HttpURLConnection.setFollowRedirects(false);
         HttpURLConnection con = null;
         StringBuffer res = new StringBuffer();
         try {
@@ -93,7 +93,7 @@ public class WebScanningService {
     }
 
     public static String getSiteContent(URL url, Map<String, String> jsonBodyParams, List<HttpCookie> cookies) {
-        HttpURLConnection.setFollowRedirects(false);
+        // HttpURLConnection.setFollowRedirects(false);
         HttpURLConnection con = null;
         StringBuffer res = new StringBuffer();
         String bodyString = convertToJson(jsonBodyParams);
