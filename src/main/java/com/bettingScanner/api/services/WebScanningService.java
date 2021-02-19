@@ -32,7 +32,8 @@ public class WebScanningService {
             // int responseCode = con.getResponseCode();
             // if (responseCode == 200) {
             List<String> cookies = con.getHeaderFields().get("Set-Cookie");
-            cookies.stream().map(HttpCookie::parse).forEach(sublist -> sublist.stream().forEach(s -> res.add(s)));
+            if (cookies != null)
+                cookies.stream().map(HttpCookie::parse).forEach(sublist -> sublist.stream().forEach(s -> res.add(s)));
             // }
         } catch (Exception ex) {
             throw new RuntimeException(ex.getMessage());
