@@ -69,6 +69,8 @@ public class WebScanningService {
         try {
             con = (HttpURLConnection) url.openConnection();
             con.setRequestMethod("GET");
+            con.setRequestProperty("User-Agent",
+                    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/79.0.3945.79 Chrome/79.0.3945.79 Safari/537.36");
             if (cookies != null && cookies.size() > 0)
                 con.setRequestProperty("Cookie", StringUtils.join(
                         cookies.stream().map(c -> c.getName() + "=" + c.getValue()).collect(Collectors.toList()), ';'));
@@ -100,6 +102,8 @@ public class WebScanningService {
         try {
             con = (HttpURLConnection) url.openConnection();
             con.setRequestMethod("POST");
+            con.setRequestProperty("User-Agent",
+                    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/79.0.3945.79 Chrome/79.0.3945.79 Safari/537.36");
             con.setRequestProperty("Content-Type", "application/json;charset=utf-8");
             con.setRequestProperty("Cookie", StringUtils.join(
                     cookies.stream().map(c -> c.getName() + "=" + c.getValue()).collect(Collectors.toList()), ';'));
