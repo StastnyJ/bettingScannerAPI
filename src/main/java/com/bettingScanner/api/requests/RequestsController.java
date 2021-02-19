@@ -1,6 +1,7 @@
 package com.bettingScanner.api.requests;
 
 import java.net.MalformedURLException;
+import java.net.URL;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -122,7 +123,6 @@ public class RequestsController {
                                             + "/event-tables?fromResults=false",
                                     change.getMatchUrl(), act.getKeyword(), act.getChatId(), null, false, true,
                                     LocalDate.now(), "", "", "GENERATED");
-                            ;
                             requestsRepository.save(req);
                             if (WebScanningService.scanRequest(req)) {
                                 result.add(req);
@@ -148,6 +148,15 @@ public class RequestsController {
             TelegramService.notifyFounds(result);
         requestsRepository.flush();
         return res + " " + result.size() + " requests found, " + requests.size() + "scanned";
+    }
+
+    @PostMapping("/testScan")
+    public String testScan(Integer requestId) throws MalformedURLException {
+        Request req = requestsRepository.findById(requestId).orElse(null);
+        if (req == null)
+            return "Req. Not found";
+        return WebScanningService.getSiteContent(new URL(req.getScanUrl()), null, "Basic YmV0bHVraTpxbXlwZmdoMTc=");
+
     }
 
     private List<Request> filterInvisible(List<Request> all) {
