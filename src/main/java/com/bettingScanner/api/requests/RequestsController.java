@@ -108,6 +108,8 @@ public class RequestsController {
         List<List<Match>> stateResult = new ArrayList<>();
         for (Request act : requests) {
             try {
+                WebScanningService.tipsportJSessionId = WebScanningService
+                        .getJSessionId(new URL("https://www.tipsport.cz/"));
                 if (act.getRequestType().equals("STATE") || act.getRequestType().equals("REPEATED")) {
                     List<Match> changes = WebScanningService.scanStateRequest(act);
                     if (act.getRequestType().equals("STATE")) {
