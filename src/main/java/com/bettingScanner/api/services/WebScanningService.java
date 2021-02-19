@@ -29,11 +29,11 @@ public class WebScanningService {
         try {
             con = (HttpURLConnection) url.openConnection();
             con.setRequestMethod("GET");
-            int responseCode = con.getResponseCode();
-            if (responseCode == 200) {
-                List<String> cookies = con.getHeaderFields().get("Set-Cookie");
-                cookies.stream().map(HttpCookie::parse).forEach(sublist -> sublist.stream().forEach(s -> res.add(s)));
-            }
+            // int responseCode = con.getResponseCode();
+            // if (responseCode == 200) {
+            List<String> cookies = con.getHeaderFields().get("Set-Cookie");
+            cookies.stream().map(HttpCookie::parse).forEach(sublist -> sublist.stream().forEach(s -> res.add(s)));
+            // }
         } catch (Exception ex) {
             throw new RuntimeException(ex.getMessage());
         } finally {
