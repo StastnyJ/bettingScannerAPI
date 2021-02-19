@@ -1,5 +1,6 @@
 package com.bettingScanner.api.requests;
 
+import java.net.HttpCookie;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.LocalDate;
@@ -155,8 +156,9 @@ public class RequestsController {
         Request req = requestsRepository.findById(requestId).orElse(null);
         if (req == null)
             return "Req. Not found";
-        return WebScanningService.getSiteContent(new URL(req.getScanUrl()), null, "Basic YmV0bHVraTpxbXlwZmdoMTc=");
-
+        String tipsportJSessionId = WebScanningService.getJSessionId(new URL("https://www.tipsport.cz/"));
+        return WebScanningService.getSiteContent(new URL(req.getScanUrl()),
+                new HttpCookie("JSESSIONID", tipsportJSessionId));
     }
 
     private List<Request> filterInvisible(List<Request> all) {
