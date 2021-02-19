@@ -157,8 +157,8 @@ public class RequestsController {
         if (req == null)
             return "Req. Not found";
         String tipsportJSessionId = WebScanningService.getJSessionId(new URL("https://www.tipsport.cz/"));
-        return WebScanningService.getSiteContent(new URL(req.getScanUrl()),
-                new HttpCookie("JSESSIONID", tipsportJSessionId));
+        return "ID: " + tipsportJSessionId + "\nContent:" + WebScanningService.getSiteContent(new URL(req.getScanUrl()),
+                new HttpCookie("JSESSIONID", tipsportJSessionId)) + "\n";
     }
 
     private List<Request> filterInvisible(List<Request> all) {
