@@ -2,7 +2,7 @@
   "canvas": {
     "width": 2000,
     "height": 2000,
-    "scrollTop": 54,
+    "scrollTop": 0,
     "scrollLeft": 0,
     "show": {
       "tableComment": false,
@@ -17,7 +17,7 @@
     },
     "database": "MySQL",
     "databaseName": "",
-    "canvasType": "GeneratorCode",
+    "canvasType": "ERD",
     "language": "TypeScript",
     "tableCase": "pascalCase",
     "columnCase": "camelCase",
@@ -108,13 +108,59 @@
               "widthDefault": 60
             },
             "id": "1a757272-3326-6cd9-6431-d3b4f9b94735"
+          },
+          {
+            "name": "Platform",
+            "comment": "",
+            "dataType": "VARCHAR(16)",
+            "default": "",
+            "option": {
+              "autoIncrement": false,
+              "primaryKey": false,
+              "unique": false,
+              "notNull": false
+            },
+            "ui": {
+              "active": false,
+              "pk": false,
+              "fk": false,
+              "pfk": false,
+              "widthName": 60,
+              "widthComment": 60,
+              "widthDataType": 83,
+              "widthDefault": 60
+            },
+            "id": "7bdbea1d-db8e-a511-2435-29831ebf124e"
+          },
+          {
+            "name": "Details",
+            "comment": "",
+            "dataType": "VARCHAR(1024)",
+            "default": "",
+            "option": {
+              "autoIncrement": false,
+              "primaryKey": false,
+              "unique": false,
+              "notNull": false
+            },
+            "ui": {
+              "active": false,
+              "pk": false,
+              "fk": false,
+              "pfk": false,
+              "widthName": 60,
+              "widthComment": 60,
+              "widthDataType": 97,
+              "widthDefault": 60
+            },
+            "id": "3d489e05-6d91-57c0-9ac6-b3252f95bad2"
           }
         ],
         "ui": {
-          "active": false,
-          "left": 167,
-          "top": 144,
-          "zIndex": 107,
+          "active": true,
+          "left": 160,
+          "top": 140,
+          "zIndex": 136,
           "widthName": 60,
           "widthComment": 60
         },

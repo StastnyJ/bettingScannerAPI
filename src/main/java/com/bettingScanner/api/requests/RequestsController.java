@@ -8,7 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.bettingScanner.api.services.TelegramService;
+import com.bettingScanner.api.notifications.ChatsRepository;
+import com.bettingScanner.api.services.NotificationService;
 import com.bettingScanner.api.services.WebScanningService;
 import com.bettingScanner.api.tipsport.Match;
 
@@ -25,6 +26,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 public class RequestsController {
     @Autowired
     RequestsRepository requestsRepository;
+
+    @Autowired
+    ChatsRepository chatsRepository;
 
     @GetMapping("/all")
     public List<Request> getAllRequests(@RequestParam(required = false, defaultValue = "true") Boolean visibleOnly) {
@@ -115,7 +119,7 @@ public class RequestsController {
                     if (act.getRequestType().equals("STATE")) {
                         if (changes.size() > 0) {
                             stateResult.add(changes);
-                            TelegramService.notifyStateChange(changes, act.getChatId());
+                            NotificationService.notifyStateChange(changes, act.getChatId(), chatsRepository);
                             requestsRepository.save(act);
                         }
                     } else {
@@ -148,7 +152,7 @@ public class RequestsController {
             }
         }
         if (result.size() > 0)
-            TelegramService.notifyFounds(result);
+            NotificationService.notifyFounds(result, chatsRepository);
         requestsRepository.flush();
         return res + " " + result.size() + " requests found, " + requests.size() + "scanned";
     }

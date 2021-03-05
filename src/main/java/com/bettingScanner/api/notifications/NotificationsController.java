@@ -1,9 +1,11 @@
 package com.bettingScanner.api.notifications;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Random;
 
-import com.bettingScanner.api.services.TelegramService;
+import com.bettingScanner.api.services.NotificationService;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -20,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/notifications/v1")
-public class TelegramController {
+public class NotificationsController {
 
     @Autowired
     private ChatsRepository chatsRepository;
@@ -36,7 +38,14 @@ public class TelegramController {
             name = "ProxyName," + Integer.toString(new Random().nextInt(9999));
         }
         String id = Integer.toString(chat.getInt("id"));
-        chatsRepository.saveAndFlush(new ChatInfo(id, name));
+        chatsRepository.saveAndFlush(new ChatInfo(id, name, ChatInfo.Platforms.TELEGRAM));
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PostMapping("/registerDiscord")
+    public ResponseEntity<Void> register(@RequestParam String webhook, @RequestParam String name) {
+        String id = "D" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSSXXX"));
+        chatsRepository.saveAndFlush(new ChatInfo(id, name, ChatInfo.Platforms.DISCORD, webhook));
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -77,7 +86,7 @@ public class TelegramController {
 
     @PostMapping("/test")
     public ResponseEntity<Void> test(@RequestParam String chatId) {
-        TelegramService.testNotification(chatId);
+        NotificationService.testNotification(chatId, chatsRepository);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }
