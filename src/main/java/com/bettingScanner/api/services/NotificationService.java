@@ -45,7 +45,7 @@ public abstract class NotificationService {
         StringBuilder body = new StringBuilder();
         body.append("Scanning service found one or more keywords on the following websites:\n\n");
         reqs.stream().forEach(req -> body.append(
-                String.format("\t- *%s:* [%s](%s)\n", req.getKeyword(), req.getDisplayUrl(), req.getDisplayUrl())));
+                String.format(" - *%s:* [%s](%s)\n", req.getKeyword(), req.getDisplayUrl(), req.getDisplayUrl())));
         NotificationService.getService(chatId, repo).sendNotification(body.toString());
     }
 
@@ -53,7 +53,7 @@ public abstract class NotificationService {
         StringBuilder body = new StringBuilder();
         body.append("Scanning service found new matches on the following websites:\n\n");
         matches.stream().forEach(m -> body
-                .append(String.format("\t- *%s:* [%s](%s)\n", m.getDescription(), m.getMatchUrl(), m.getMatchUrl())));
+                .append(String.format(" - *%s:* [%s](%s)\n", m.getDescription(), m.getMatchUrl(), m.getMatchUrl())));
         NotificationService.getService(chatId, repo).sendNotification(body.toString());
     }
 

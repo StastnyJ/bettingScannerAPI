@@ -43,6 +43,6 @@ public class DiscordService extends NotificationService {
     }
 
     private String formatMessage(String text) {
-        return "{\"content\": \"" + text + "\"}";
+        return ("{\"content\": \"" + text + "\"}").replaceAll("\\r|\\n", "");
     }
 }
