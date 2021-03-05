@@ -43,10 +43,10 @@ public class NotificationsController {
     }
 
     @PostMapping("/registerDiscord")
-    public ResponseEntity<Void> register(@RequestParam String webhook, @RequestParam String name) {
+    public String register(@RequestParam String webhook, @RequestParam String name) {
         String id = "D" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSSXXX"));
         chatsRepository.saveAndFlush(new ChatInfo(id, name, ChatInfo.Platforms.DISCORD, webhook));
-        return new ResponseEntity<>(HttpStatus.OK);
+        return id;
     }
 
     @GetMapping("/getChats")
