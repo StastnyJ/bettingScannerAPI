@@ -4,6 +4,11 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Stream;
+
+import reactor.util.function.Tuple2;
 
 public class TelegramService extends NotificationService {
     private final static String botToken = "1368983189:AAHMvRxsZEgM3wAi0Zo-BRFPd9f_wD8JZG0";
@@ -11,6 +16,17 @@ public class TelegramService extends NotificationService {
 
     public TelegramService(String chatId) {
         this.chatId = chatId;
+    }
+
+    @Override
+    protected List<String> formatMessage(Stream<Tuple2<String, String>> records, String header) {
+        StringBuilder body = new StringBuilder();
+        body.append(header + ":\n\n");
+        records.forEach(
+                req -> body.append(String.format(" - *%s:* [%s](%s)\n", req.getT1(), req.getT2(), req.getT2())));
+        List<String> res = new ArrayList<>();
+        res.add(body.toString());
+        return res;
     }
 
     protected boolean sendNotification(String text) {
