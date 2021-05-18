@@ -5,6 +5,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -104,13 +105,70 @@ public class RequestsController {
         return req;
     }
 
+    // @PostMapping(value = "/scan")
+    // public String scan() {
+    // String res = "";
+    // List<Request> requests = getWaitingRequests(false);
+    // List<Request> result = new ArrayList<>();
+    // List<List<Match>> stateResult = new ArrayList<>();
+    // for (Request act : requests) {
+    // try {
+    // WebScanningService.tipsportJSessionId = WebScanningService
+    // .getJSessionId(new URL("https://www.tipsport.cz/"));
+    // if (act.getRequestType().equals("STATE") ||
+    // act.getRequestType().equals("REPEATED")) {
+    // List<Match> changes = WebScanningService.scanStateRequest(act);
+    // if (act.getRequestType().equals("STATE")) {
+    // if (changes.size() > 0) {
+    // stateResult.add(changes);
+    // NotificationService.notifyStateChange(changes, act.getChatId(),
+    // chatsRepository);
+    // requestsRepository.save(act);
+    // }
+    // } else {
+    // for (Match change : changes) {
+
+    // Request req = new Request(
+    // "https://m.tipsport.cz/rest/offer/v1/matches/" + change.getId()
+    // + "/event-tables?fromResults=false",
+    // change.getMatchUrl(), act.getKeyword(), act.getChatId(), null, false, true,
+    // LocalDate.now(), "", "", "GENERATED");
+    // requestsRepository.save(req);
+    // if (WebScanningService.scanRequest(req)) {
+    // result.add(req);
+    // req.setFinnished(true);
+    // requestsRepository.save(req);
+    // }
+    // }
+    // }
+    // } else {
+    // if (WebScanningService.scanRequest(act)) {
+    // result.add(act);
+    // act.setFinnished(true);
+    // requestsRepository.save(act);
+    // }
+    // }
+    // } catch (MalformedURLException ex) {
+    // requestsRepository.deleteById(act.getId());
+    // } catch (Exception ex) {
+    // res += "[ERROR] " + act.getId() + " " + ex.getMessage() + "\n";
+    // }
+    // }
+    // if (result.size() > 0)
+    // NotificationService.notifyFounds(result, chatsRepository);
+    // requestsRepository.flush();
+    // return res + " " + result.size() + " requests found, " + requests.size() +
+    // "scanned";
+    // }
+
     @PostMapping(value = "/scan")
     public String scan() {
-        String res = "";
         List<Request> requests = getWaitingRequests(false);
-        List<Request> result = new ArrayList<>();
-        List<List<Match>> stateResult = new ArrayList<>();
-        for (Request act : requests) {
+        List<Request> result = Collections.synchronizedList(new ArrayList<>());
+        List<List<Match>> stateResult = Collections.synchronizedList(new ArrayList<>());
+        List<String> errors = Collections.synchronizedList(new ArrayList<>());
+        requests.stream().parallel().forEach(act -> {
+
             try {
                 WebScanningService.tipsportJSessionId = WebScanningService
                         .getJSessionId(new URL("https://www.tipsport.cz/"));
@@ -148,13 +206,13 @@ public class RequestsController {
             } catch (MalformedURLException ex) {
                 requestsRepository.deleteById(act.getId());
             } catch (Exception ex) {
-                res += "[ERROR] " + act.getId() + " " + ex.getMessage() + "\n";
+                errors.add("[ERROR] " + act.getId() + " " + ex.getMessage());
             }
-        }
+        });
         if (result.size() > 0)
             NotificationService.notifyFounds(result, chatsRepository);
         requestsRepository.flush();
-        return res + " " + result.size() + " requests found, " + requests.size() + "scanned";
+        return String.join("\n", errors) + " " + result.size() + " requests found, " + requests.size() + "scanned";
     }
 
     @PostMapping("/testScan")
