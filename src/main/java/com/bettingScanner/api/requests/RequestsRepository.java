@@ -12,6 +12,6 @@ public interface RequestsRepository extends JpaRepository<Request, Integer> {
     public void deleteByRequestType(String requestType);
 
     @Modifying
-    @Query("UPDATE Requests SET state=''")
+    @Query(value = "UPDATE Requests SET state=''", nativeQuery = true)
     public void resetStates();
 }
