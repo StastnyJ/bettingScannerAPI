@@ -107,7 +107,7 @@ public class RequestsController {
 
     @PostMapping("/clear")
     public void clear() {
-        requestsRepository.deleteByRequestType("GENERATED");
+        requestsRepository.clearGenerated();
         requestsRepository.resetStates();
     }
 
