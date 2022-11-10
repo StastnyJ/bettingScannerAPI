@@ -119,6 +119,9 @@ public class RequestsController {
         List<String> errors = Collections.synchronizedList(new ArrayList<>());
         requests.stream().parallel().forEach(act -> {
             try {
+                Request updated = requestsRepository.findById(act.getId()).orElse(null);
+                if (updated != null && updated.getFinnished())
+                    return;
                 WebScanningService.tipsportJSessionId = WebScanningService
                         .getJSessionId(new URL("https://www.tipsport.cz/"));
                 if (act.getRequestType().equals("STATE") || act.getRequestType().equals("REPEATED")) {
@@ -127,7 +130,7 @@ public class RequestsController {
                         if (changes.size() > 0) {
                             stateResult.add(changes);
                             NotificationService.notifyStateChange(changes, act.getChatId(), chatsRepository);
-                            requestsRepository.save(act);
+                            requestsRepository.saveAndFlush(act);
                         }
                     } else {
                         for (Match change : changes) {
@@ -137,11 +140,11 @@ public class RequestsController {
                                             + "/event-tables?fromResults=false",
                                     change.getMatchUrl(), act.getKeyword(), act.getChatId(), null, false, true,
                                     LocalDate.now(), "", "", "GENERATED");
-                            requestsRepository.save(req);
+                            requestsRepository.saveAndFlush(req);
                             if (WebScanningService.scanRequest(req)) {
                                 result.add(req);
                                 req.setFinnished(true);
-                                requestsRepository.save(req);
+                                requestsRepository.saveAndFlush(req);
                             }
                         }
                     }
@@ -149,7 +152,7 @@ public class RequestsController {
                     if (WebScanningService.scanRequest(act)) {
                         result.add(act);
                         act.setFinnished(true);
-                        requestsRepository.save(act);
+                        requestsRepository.saveAndFlush(act);
                     }
                 }
             } catch (MalformedURLException ex) {
