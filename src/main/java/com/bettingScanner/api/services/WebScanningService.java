@@ -29,6 +29,8 @@ public class WebScanningService {
         try {
             con = (HttpURLConnection) url.openConnection();
             con.setRequestMethod("GET");
+            con.setRequestProperty("User-Agent",
+                    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/79.0.3945.79 Chrome/79.0.3945.79 Safari/537.36");
             // int responseCode = con.getResponseCode();
             // if (responseCode == 200) {
             List<String> cookies = con.getHeaderFields().get("Set-Cookie");
