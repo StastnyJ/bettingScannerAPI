@@ -174,7 +174,8 @@ public class WebScanningService {
         try {
             String sessionId = WebScanningService.getJSessionId(new URL("https://www.tipsport.cz/"));
             String res = WebScanningService.getSiteContent(
-                    new URL("https://m.tipsport.cz/rest/offer/v1/offer?limit=200"), params,
+                    new URL("https://m.tipsport.cz/rest/offer/v2/offer?limit=200"), params,
+                    // new URL("https://m.tipsport.cz/rest/offer/v1/offer?limit=200"), params,
                     new HttpCookie("JSESSIONID", sessionId));
             List<Match> actMatches = Match.parseFromJson(res);
             List<Match> oldMatches;

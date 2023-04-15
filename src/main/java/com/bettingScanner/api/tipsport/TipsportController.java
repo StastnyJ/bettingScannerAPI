@@ -42,7 +42,7 @@ public class TipsportController {
         params.put("type", categoryType);
         try {
             String sessionId = WebScanningService.getJSessionId(new URL("https://www.tipsport.cz/"));
-            String res = WebScanningService.getSiteContent(new URL("https://m.tipsport.cz/rest/offer/v1/offer"), params,
+            String res = WebScanningService.getSiteContent(new URL("https://m.tipsport.cz/rest/offer/v2/offer"), params,
                     new HttpCookie("JSESSIONID", sessionId));
             return Match.parseFromJson(res);
         } catch (MalformedURLException ex) {
