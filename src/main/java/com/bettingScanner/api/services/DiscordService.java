@@ -43,6 +43,7 @@ public class DiscordService extends NotificationService {
             con.setRequestMethod("POST");
 
             con.setRequestProperty("Content-Type", "application/json");
+            con.setRequestProperty("user-agent", "curl/7.81.0");
 
             con.setDoOutput(true);
             try (OutputStream os = con.getOutputStream()) {
@@ -50,7 +51,6 @@ public class DiscordService extends NotificationService {
                 os.write(input, 0, input.length);
                 os.flush();
             }
-
             int responseCode = con.getResponseCode();
             if (responseCode >= 400 && responseCode < 500)
                 return false;

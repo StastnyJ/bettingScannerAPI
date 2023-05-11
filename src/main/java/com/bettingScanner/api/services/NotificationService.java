@@ -68,6 +68,6 @@ public abstract class NotificationService {
     }
 
     public static void testNotification(String chatId, ChatsRepository repo) {
-        NotificationService.getService(chatId, repo).sendNotification("This is test notification");
+        NotificationService.getService(chatId, repo).sendNotification("{\"content\":\"This is test notification\"}");
     }
 }
