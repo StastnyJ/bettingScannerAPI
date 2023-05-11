@@ -40,20 +40,29 @@ public class Match {
                 JSONArray competitions = tab.getJSONArray("offerCompetitionAnnuals");
                 for (int j = 0; j < competitions.length(); j++) {
                     JSONObject comp = competitions.getJSONObject(j);
-                    JSONArray matches = comp.getJSONArray("offerMatches");
+                    JSONArray matches;
+                    if (comp.has("offerMatches")) {
+                        matches = comp.getJSONArray("offerMatches");
+                    } else {
+                        matches = comp.getJSONArray("matches");
+                    }
                     for (int k = 0; k < matches.length(); k++) {
-                        JSONObject match = matches.getJSONObject(k).getJSONObject("match");
+                        JSONObject match = comp.has("offerMatches") ? matches.getJSONObject(k).getJSONObject("match")
+                                : matches.getJSONObject(k);
                         int id = match.getInt("id");
                         String desc = match.getString("nameFull");
                         String home = match.getString("homeParticipant").toLowerCase().replace(" ", "-");
                         String visit = match.getString("visitingParticipant").toLowerCase().replace(" ", "-");
                         String sport = match.getString("nameSuperSport").toLowerCase().replace(" ", "-");
-                        String matchUrl = String.format("https://www.tipsport.cz/%s-%s-%s-%d", sport, home, visit, id);
+                        String matchUrl = String.format("https://www.tipsport.cz/%s-%s-%s-%d", sport, home, visit,
+                                id);
                         res.add(new Match(desc, id, matchUrl));
                     }
                 }
             }
-        } catch (JSONException ex) {
+        } catch (
+
+        JSONException ex) {
 
         }
         return res;
