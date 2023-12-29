@@ -97,7 +97,7 @@ public class WebScanningService {
         return res.toString();
     }
 
-    public static String getSiteContent(URL url, Map<String, String> jsonBodyParams, List<HttpCookie> cookies) {
+    public static String getSiteContent(URL url, Map<String, Object> jsonBodyParams, List<HttpCookie> cookies) {
         HttpURLConnection.setFollowRedirects(false);
         HttpURLConnection con = null;
         StringBuffer res = new StringBuffer();
@@ -134,16 +134,21 @@ public class WebScanningService {
         return res.toString();
     }
 
-    public static String getSiteContent(URL url, Map<String, String> jsonBodyParams, HttpCookie cookie) {
+    public static String getSiteContent(URL url, Map<String, Object> jsonBodyParams, HttpCookie cookie) {
         List<HttpCookie> cookies = new ArrayList<>();
         cookies.add(cookie);
         return getSiteContent(url, jsonBodyParams, cookies);
     }
 
-    private static String convertToJson(Map<String, String> params) {
+    private static String convertToJson(Map<String, Object> params) {
         List<String> vals = new LinkedList<>();
         for (String key : params.keySet()) {
-            vals.add(String.format("\"%s\":\"%s\"", key, params.get(key)));
+            if(params.get(key) instanceof String)
+                vals.add(String.format("\"%s\":\"%s\"", key, params.get(key)));
+            else if(params.get(key) instanceof Boolean)
+                vals.add(String.format("\"%s\":%s", key, (Boolean)params.get(key) ? "true" : "false"));
+            else
+                vals.add(String.format("\"%s\":", key) + params.get(key).toString());
         }
         return "{" + String.join(",", vals) + "}";
     }
@@ -166,10 +171,10 @@ public class WebScanningService {
     public static List<Match> scanStateRequest(Request req) {
         String url = req.getScanUrl().replace("--", "-&");
         Integer id = Integer.parseInt((url.split("-")[url.split("-").length - 1]).replace("&", "-"));
-        Map<String, String> params = new HashMap<>();
+        Map<String, Object> params = new HashMap<>();
         params.put("url", req.getScanUrl());
-        params.put("id", id.toString());
-        params.put("results", "false");
+        params.put("id", id);
+        params.put("results", false);
         params.put("type", req.getTipsportCategory());
         try {
             String sessionId = WebScanningService.getJSessionId(new URL("https://www.tipsport.cz/"));

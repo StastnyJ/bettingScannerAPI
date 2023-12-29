@@ -35,11 +35,11 @@ public class TipsportController {
             @RequestParam(defaultValue = "COMPETITION") String categoryType) {
         url = url.replace("--", "-&");
         Integer id = Integer.parseInt((url.split("-")[url.split("-").length - 1]).replace("&", "-"));
-        Map<String, String> params = new HashMap<>();
+        Map<String, Object> params = new HashMap<>();
         params.put("url", url.replace("-&", "--"));
-        params.put("id", id.toString());
-        params.put("results", "false");
-        params.put("type", categoryType);
+        params.put("id", id);
+        params.put("results", false);
+        params.put("type", categoryType.toUpperCase());
         try {
             String sessionId = WebScanningService.getJSessionId(new URL("https://www.tipsport.cz/"));
             String res = WebScanningService.getSiteContent(new URL("https://m.tipsport.cz/rest/offer/v2/offer"), params,

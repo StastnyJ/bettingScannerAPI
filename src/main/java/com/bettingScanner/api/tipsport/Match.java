@@ -47,22 +47,22 @@ public class Match {
                         matches = comp.getJSONArray("matches");
                     }
                     for (int k = 0; k < matches.length(); k++) {
-                        JSONObject match = comp.has("offerMatches") ? matches.getJSONObject(k).getJSONObject("match")
-                                : matches.getJSONObject(k);
-                        int id = match.getInt("id");
-                        String desc = match.getString("nameFull");
-                        String home = match.getString("homeParticipant").toLowerCase().replace(" ", "-");
-                        String visit = match.getString("visitingParticipant").toLowerCase().replace(" ", "-");
-                        String sport = match.getString("nameSuperSport").toLowerCase().replace(" ", "-");
-                        String matchUrl = String.format("https://www.tipsport.cz/%s-%s-%s-%d", sport, home, visit,
-                                id);
-                        res.add(new Match(desc, id, matchUrl));
+                        try{
+                            JSONObject match = comp.has("offerMatches") ? matches.getJSONObject(k).getJSONObject("match")
+                                    : matches.getJSONObject(k);
+                            int id = match.getInt("id");
+                            String desc = match.getString("nameFull");
+                            String home = match.getString("homeParticipant").toLowerCase().replace(" ", "-");
+                            String visit = match.getString("visitingParticipant").toLowerCase().replace(" ", "-");
+                            String sport = match.getString("nameSuperSport").toLowerCase().replace(" ", "-");
+                            String matchUrl = String.format("https://www.tipsport.cz/%s-%s-%s-%d", sport, home, visit,
+                                    id);
+                            res.add(new Match(desc, id, matchUrl));
+                        }catch(Exception ex){}
                     }
                 }
             }
-        } catch (
-
-        JSONException ex) {
+        } catch (JSONException ex) {
 
         }
         return res;
