@@ -13,7 +13,12 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
+
+import org.openqa.selenium.Cookie;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 
 import com.bettingScanner.api.requests.Request;
 import com.bettingScanner.api.tipsport.Match;
@@ -31,12 +36,43 @@ public class WebScanningService {
             con.setRequestMethod("GET");
             con.setRequestProperty("User-Agent",
                     "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/79.0.3945.79 Chrome/79.0.3945.79 Safari/537.36");
-            // int responseCode = con.getResponseCode();
-            // if (responseCode == 200) {
             List<String> cookies = con.getHeaderFields().get("Set-Cookie");
             if (cookies != null)
                 cookies.stream().map(HttpCookie::parse).forEach(sublist -> sublist.stream().forEach(s -> res.add(s)));
-            // }
+        } catch (Exception ex) {
+            throw new RuntimeException(ex.getMessage());
+        } finally {
+            if (con != null)
+                con.disconnect();
+        }
+        return res;
+    }
+
+    public static List<HttpCookie> getCookiesWithDriver(URL url) {
+        HttpURLConnection con = null;
+        List<HttpCookie> res = new ArrayList<>();
+        try {
+            con = (HttpURLConnection) url.openConnection();
+            con.setRequestMethod("GET");
+            con.setRequestProperty("User-Agent",
+                    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/79.0.3945.79 Chrome/79.0.3945.79 Safari/537.36");
+            List<String> cookies = con.getHeaderFields().get("Set-Cookie");
+            if (cookies != null) {
+                cookies.stream().map(HttpCookie::parse).forEach(sublist -> sublist.forEach(s -> res.add(s)));
+
+                // Bypass Cloudflare Challenge using Selenium
+                WebDriver driver = new HtmlUnitDriver();
+                driver.get(url.toString());
+
+                // Extract cookies from the Selenium WebDriver
+                Set<Cookie> seleniumCookies = ((HtmlUnitDriver) driver).manage().getCookies();
+                for (Cookie cookie : seleniumCookies) {
+                    res.add(new HttpCookie(cookie.getName(), cookie.getValue()));
+                }
+
+                // Close the WebDriver
+                driver.quit();
+            }
         } catch (Exception ex) {
             throw new RuntimeException(ex.getMessage());
         } finally {
@@ -48,6 +84,11 @@ public class WebScanningService {
 
     public static String getJSessionId(URL url) {
         List<HttpCookie> cookies = getCookies(url);
+        for (HttpCookie act : cookies) {
+            if (act.getName().equals("JSESSIONID"))
+                return act.getValue();
+        }
+        cookies = getCookiesWithDriver(url);
         for (HttpCookie act : cookies) {
             if (act.getName().equals("JSESSIONID"))
                 return act.getValue();
@@ -143,10 +184,10 @@ public class WebScanningService {
     private static String convertToJson(Map<String, Object> params) {
         List<String> vals = new LinkedList<>();
         for (String key : params.keySet()) {
-            if(params.get(key) instanceof String)
+            if (params.get(key) instanceof String)
                 vals.add(String.format("\"%s\":\"%s\"", key, params.get(key)));
-            else if(params.get(key) instanceof Boolean)
-                vals.add(String.format("\"%s\":%s", key, (Boolean)params.get(key) ? "true" : "false"));
+            else if (params.get(key) instanceof Boolean)
+                vals.add(String.format("\"%s\":%s", key, (Boolean) params.get(key) ? "true" : "false"));
             else
                 vals.add(String.format("\"%s\":", key) + params.get(key).toString());
         }
